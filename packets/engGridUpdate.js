@@ -3,7 +3,7 @@
 
 exports.name = 'engGridUpdate';
 
-exports.type = 0xf754c8fe;
+exports.type = 0x077e9f3c;
 
 exports.subtype = null;
 
@@ -12,31 +12,41 @@ exports.pack = null;	// Only from server to client
 exports.unpack = function(data) {
 	
 	/// FIXME!!!
+	var unpacked = { 
+		unknown: data.readByte(),
+		nodes: [], 
+		teams: [] 
+	};
 	
-	console.warn('engGridUpdate packet format not finished!!!');
+	if (data.peekByte() != 0xff) {
+		var node = {
+			x: data.readByte(),
+			y: data.readByte(),
+			z: data.readByte(),
+			damage: data.readFloat()
+		}
+		unpacked.nodes.push(node);
+	}
 	
-	console.log(data);
+	// Consume the array boundary into the void.
+	data.readByte();
 	
-// 	for (var playerShip = 1; playerShip <= 8; playerShip++) {
-// 		
-// 		var driveType = data.readUInt32LE(0);
-// 		var shipType  = data.readUInt32LE(4);
-// 		var unknown   = data.readUInt32LE(8);
-// 		var strLen    = data.readUInt32LE(12) * 2;
-// 		var name      = data.toString('utf16le', 16, 16+strLen-2);
-// 		data = data.slice(16 + strLen);
-// 		
-// 		unpacked[playerShip] = {
-// 			shipType: shipType,
-// 			driveType: driveType,
-// 			unknown: unknown,
-// 			name: name
-// 		}
-// 	}
-// 	
-	return {};
-	
+	if (data.peekByte() != 0xfe) {
+		var team = {
+			teamID: data.readByte(),
+			goalX: data.readLong(),
+			goalY: data.readLong(),
+			goalZ: data.readLong(),
+			x: data.readLong(),
+			y: data.readLong(),
+			z: data.readLong(),
+			progress: data.readFloat(),
+			members:  data.readLong()
+		}
+		unpacked.teams.push(team);
+	}
 
+	return unpacked;
 }
 
 

@@ -3,7 +3,7 @@
 
 var net = require('net');
 var fs  = require('fs');
-
+var reader = require('./artemisBufferReader').artemisBufferReader;
 // Server Address, will only be set if connected.
 var serverAddr = null;
 
@@ -69,18 +69,16 @@ function off(eventType, fn) {
 
 // When a packet is received, parse its header and delegate further
 //   parsing depending on the packet type.
-function onPacket(data) {
-// 	console.log('Received data from server: ');
-	
-// 	var header = bufferpack.unpack(headerFormat, data, 0);
+function onPacket(buffer) {
 	var header = {};
+	var data = new reader(buffer);
 	
-	header.magic          = data.readUInt32LE(0);
-	header.packetLength   = data.readUInt32LE(4);
-	header.origin         = data.readUInt32LE(8);
-	header.unknown        = data.readUInt32LE(12);
-	header.bytesRemaining = data.readUInt32LE(16);
-	header.type           = data.readUInt32LE(20);
+	header.magic          = data.readLong();
+	header.packetLength   = data.readLong();
+	header.origin         = data.readLong();
+	header.unknown        = data.readLong();
+	header.bytesRemaining = data.readLong();
+	header.type           = data.readLong();
 	header.subtype        = null;
 	
 // 	console.log(header);
@@ -93,35 +91,44 @@ function onPacket(data) {
 		console.error('Packet length and remaining bytes mismatch!!');
 		return;
 	}
-
 	
 	var packetDef = null;
 	if (knownPackets.hasOwnProperty( header.type )) {
 		if (knownPackets[header.type].subpackets) {
 			var subtypeLength = knownPackets[header.type].subtypeLength;
 			if (subtypeLength == 1) {
-				header.subtype = data.readUInt8(24);
+				header.subtype = data.readByte();
 			} else if (subtypeLength == 4) {
-				header.subtype = data.readUInt32LE(24);
+				header.subtype = data.readLong();
 			}
 			if (knownSubPackets[header.type].hasOwnProperty(header.subtype)) {
 				packetDef = knownSubPackets[header.type][header.subtype];
-				data = data.slice(24 + subtypeLength);
-				header.packetLength -= (24 + subtypeLength);
 			}
 		} else {
 			packetDef = knownPackets[header.type];
-			data = data.slice(24);
-			header.packetLength -= 24;
 		}
 	}
 	
 	if (packetDef) {
-		var packet = packetDef.unpack(data.slice(0, header.packetLength));
+		var packet = packetDef.unpack(data);
 		var packetType = packetDef.name;
 		
-		if (packet) { // Ignore empty updates, at least for now
-			console.log('Known packet: ', packetType, packet);
+		// Show contents of packet, for debugging
+		if (packet)
+		{
+			if (packetType == 'unknownUpdate') {} // Ignore empty updates, at least for now
+		 
+// 			else if (packetType == 'playerUpdate' && Object.keys(packet).length > 5) {
+// 				console.log('Player packet: ', packetType, packet);
+// 			}
+// 			else if (packetType == 'npcUpdate' && Object.keys(packet).length > 6) {
+// 				console.log('NPC packet: ', packetType, packet);
+// 			}
+// 			else if (packetType == 'playerUpdate') {} // ignore
+// 			else if (packetType == 'npcUpdate') {} // ignore
+			else {
+				console.log('Known packet: ', packetType, packet);
+			}
 		}
 		
 		fireEvents(packetType, packet);
@@ -131,8 +138,8 @@ function onPacket(data) {
 		// Display the unknown payload if it's not a magic word
 		//   marking the start of the next packet.
 		if (data.length) {
-			if (data.readUInt32LE(0) != 0xdeadbeef) {
-				console.log('Unknown payload: ', data.slice(0,header.packetLength));
+			if (data.buffer.readLong(0) != 0xdeadbeef) {
+				console.log('Unknown payload: ', data.buffer.slice(0,header.packetLength));
 			}
 		}
 	}
@@ -140,8 +147,8 @@ function onPacket(data) {
 	fireEvents('packet', header);
 
 	// Perhaps we still have some data in the same TCP packet, so let's use a bit of recursivity...
-	if (data.length > header.packetLength) {
-		onPacket( data.slice(header.packetLength) );
+	if (data.buffer.length > header.packetLength) {
+		onPacket( data.buffer.slice(header.packetLength) );
 	}
 }
 

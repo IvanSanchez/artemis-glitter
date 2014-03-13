@@ -12,8 +12,9 @@ exports.subtypeLength = 4;	// 4 bytes -> UInt32LE
 exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
+	var skyboxID = data.readLong();
 	return {
-		skyboxID: data.readUInt32LE(0),
+		skyboxID: skyboxID,
 	}
 }
 

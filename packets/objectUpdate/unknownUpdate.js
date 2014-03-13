@@ -16,11 +16,11 @@ exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
 
-	if (data.length >= 4) {
-		console.warn('Unknown update packet: ', data);
-	}
-	
-	return false;
+// 	if (data.buffer.length > 28) {
+// 		console.warn('Unknown update packet: ', data);
+// 	}
+	return {};
+// 	return false;
 }
 
 

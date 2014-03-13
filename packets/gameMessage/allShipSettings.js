@@ -15,12 +15,10 @@ exports.unpack = function(data) {
 	// All playerShips around are 1-based and not 0-based
 	for (var playerShip = 1; playerShip <= 8; playerShip++) {
 		
-		var driveType = data.readUInt32LE(0);
-		var shipType  = data.readUInt32LE(4);
-		var unknown   = data.readUInt32LE(8);
-		var strLen    = data.readUInt32LE(12) * 2;
-		var name      = data.toString('utf16le', 16, 16+strLen-2);
-		data = data.slice(16 + strLen);
+		var driveType = data.readLong();
+		var shipType  = data.readLong();
+		var unknown   = data.readLong();
+		var name      = data.readString();
 		
 		unpacked[playerShip] = {
 			shipType: shipType,

@@ -13,12 +13,15 @@ exports.subtypeLength = 4;	// 4 bytes -> UInt32LE
 exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
+	
+	var unknown1 = data.readLong();
+	
+	// Seems to be around 1 for shield hits, and around 2 for hull hits.
+	var unknown2 = data.readFloat();
+	
 	return {
-		unknown1: data.readUInt32LE(0),
-		
-		// Seems to be around 1 for shield hits, and around
-		//   2 for hull hits.
-		unknown2: data.readFloatLE(4)
+		unknown1: unknown1,
+		unknown2: unknown2
 	}
 }
 

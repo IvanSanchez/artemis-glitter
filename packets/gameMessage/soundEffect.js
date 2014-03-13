@@ -11,11 +11,10 @@ exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
 	
-	var strLen   = data.readUInt32LE(0) * 2;
-	var filename = data.toString('utf16le', 4, 4+strLen-2);
+	var filename = data.readString();
 	
 	return {
-		filename: file,
+		filename: filename,
 	}
 }
 

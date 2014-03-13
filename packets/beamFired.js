@@ -14,28 +14,31 @@ exports.unpack = function(data) {
 	return {
 		// Beams fired have an ID, in the same range as all the other
 		//   objects (ships, stations, missiles/drones, etc)
-		id: data.readUInt32LE(0),
-		unknown2: data.readUInt32LE(4),
-		unknown3: data.readUInt32LE(8),
+		id:       data.readLong(),
 		
-		// Possible X-coord of the target engGrid?
-		// Possible beam battery ID?
-		unknown4: data.readUInt32LE(12),
-		// Possible Y-coord of the target engGrid
-		unknown5: data.readUInt32LE(16),
-		// Possible Z-coord of the target engGrid
-		unknown6: data.readUInt32LE(20),
+		// Observerd 0 when fired from enemy, 1 when fired from own ship
+		unknown2: data.readLong(),
+		
+		// Possibly related to beam strenght.
+		unknown3: data.readLong(),
+		
+		// Usually 0 is starboard arc and 1 is portside arc
+		beamPort: data.readLong(),
+		
+		// Observed 4
+		unknown5: data.readLong(),
+		
+		// Observed 1
+		unknown6: data.readLong(),
 
-		source:   data.readUInt32LE(24),
-		target:   data.readUInt32LE(28),
+		source:   data.readLong(),
+		target:   data.readLong(),
 		
-		// Possible manual-fire heading
-		unknown7: data.readFloatLE(32),
-		// Possible manual-fire aximuth
-		unknown8: data.readFloatLE(36),
+		impactX: data.readFloat(),
+		impactZ: data.readFloat(),
+		impactY: data.readFloat(),
 		
-		unknown9: data.readUInt32LE(40),
-		unknown10: data.readUInt32LE(44)
+		unknown10: data.readLong()
 	}
 
 }
