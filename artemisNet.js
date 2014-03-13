@@ -46,10 +46,13 @@ function connect (addr, r) {
 
 
 // Aux function to fire all event handlers of the given event.
-// The event handler will be passed 'data'
-function fireEvents(eventType, data) {
+// The event handler will be passed 'data', a generic object 
+//   containing the human-readable contents of the packet.
+// In the special case of the 'packet' event, a 'packetType' 
+//   is added to the struct.
+function fireEvents(eventType, data, packetType) {
 	for (var i in eventHandlers[eventType]) {
-		eventHandlers[eventType][i]();
+		eventHandlers[eventType][i](data, packetType);
 	}
 }
 
@@ -114,24 +117,25 @@ function onPacket(buffer) {
 		var packetType = packetDef.name;
 		
 		// Show contents of packet, for debugging
-		if (packet)
-		{
-			if (packetType == 'unknownUpdate') {} // Ignore empty updates, at least for now
-		 
-// 			else if (packetType == 'playerUpdate' && Object.keys(packet).length > 5) {
-// 				console.log('Player packet: ', packetType, packet);
+// 		if (packet)
+// 		{
+// 			if (packetType == 'unknownUpdate') {} // Ignore empty updates, at least for now
+// 		 
+// // 			else if (packetType == 'playerUpdate' && Object.keys(packet).length > 5) {
+// // 				console.log('Player packet: ', packetType, packet);
+// // 			}
+// // 			else if (packetType == 'npcUpdate' && Object.keys(packet).length > 6) {
+// // 				console.log('NPC packet: ', packetType, packet);
+// // 			}
+// // 			else if (packetType == 'playerUpdate') {} // ignore
+// // 			else if (packetType == 'npcUpdate') {} // ignore
+// 			else {
+// 				console.log('Known packet: ', packetType, packet);
 // 			}
-// 			else if (packetType == 'npcUpdate' && Object.keys(packet).length > 6) {
-// 				console.log('NPC packet: ', packetType, packet);
-// 			}
-// 			else if (packetType == 'playerUpdate') {} // ignore
-// 			else if (packetType == 'npcUpdate') {} // ignore
-			else {
-				console.log('Known packet: ', packetType, packet);
-			}
-		}
+// 		}
 		
 		fireEvents(packetType, packet);
+		fireEvents('packet', packet, packetType);
 	} else {
 		console.error('Unknown packet type: ', header.type.toString(16), ', subtype: ', header.subtype);
 		
@@ -142,9 +146,9 @@ function onPacket(buffer) {
 				console.log('Unknown payload: ', data.buffer.slice(0,header.packetLength));
 			}
 		}
+		fireEvents('packet', header);
 	}
 	
-	fireEvents('packet', header);
 
 	// Perhaps we still have some data in the same TCP packet, so let's use a bit of recursivity...
 	if (data.buffer.length > header.packetLength) {

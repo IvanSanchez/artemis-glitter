@@ -22,7 +22,7 @@ exports.unpack = function(data) {
 	// This is why this seems backwards :-(
 	if (bits.get(7)) { unpacked.shipName       = data.readString();}
 	if (bits.get(6)) { unpacked.unknown1       = data.readFloat();}
-	if (bits.get(5)) { unpacked.unknown2       = data.readFloat();}	// Possible rudder / rate of turn (0.5  = ahead)
+	if (bits.get(5)) { unpacked.rudder         = data.readFloat();}
 	if (bits.get(4)) { unpacked.impulseMax     = data.readFloat();}
 	if (bits.get(3)) { unpacked.turnRateMax    = data.readFloat();}
 	if (bits.get(2)) { unpacked.isEnemy        = data.readLong(); }

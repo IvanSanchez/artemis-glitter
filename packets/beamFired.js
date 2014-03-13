@@ -20,6 +20,8 @@ exports.unpack = function(data) {
 		unknown2: data.readLong(),
 		
 		// Possibly related to beam strenght.
+		// Perhaps 1200 = light cruiser's 12 damage * 100%
+		// Perhaps enemy 100 = kralien's 1 damage * 100%
 		unknown3: data.readLong(),
 		
 		// Usually 0 is starboard arc and 1 is portside arc
