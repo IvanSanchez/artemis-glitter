@@ -58,15 +58,15 @@ socket.on('gameOver', function(){
 
 socket.on('destroyObject', function(data){
 	/// TODO: Somehow log this
-	delete(model[data.id]);
+	delete(model.entities[data.id]);
 	model.fireEvents('destroyEntity', data);
 });
 
 
 function updateEntity(data, type) {
-	if (!model.hasOwnProperty(data.id)) {
-		model[data.id] = data;
-		model[data.id].entityType = type;
+	if (!model.entities.hasOwnProperty(data.id)) {
+		model.entities[data.id] = data;
+		model.entities[data.id].entityType = type;
 		model.fireEvents('newEntity', data);
 		return;
 	}
@@ -74,7 +74,7 @@ function updateEntity(data, type) {
 	for (var key in data) {
 		/// TODO: Log to console if some unknown value changes, 
 		///   to help identify more fields.
-		model[data.id][key] = data[key];
+		model.entities[data.id][key] = data[key];
 		model.fireEvents('updateEntity', data);
 	}
 };
@@ -85,7 +85,6 @@ socket.on('playerUpdate', function (data) {
 	// Entity type 1 = Player ship
 	updateEntity(data, 1);
 });
-
 
 socket.on('npcUpdate', function (data) {
 	// Entity type 4 = NPC

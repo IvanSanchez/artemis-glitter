@@ -59,7 +59,7 @@ server.listen(3000);
 io.sockets.on('connection', function (s){
 	artemisNet.on('packet', function(data, packetType){
 		if (packetType == 'unknownUpdate') {return;}
-		console.log('received data, preparing to emit socket: ', data);
+// 		console.log('received data, preparing to emit socket: ', data);
 		s.emit(packetType, data);
 	});
 });
