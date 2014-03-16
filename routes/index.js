@@ -3,7 +3,7 @@
  * GET home page.
  */
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' })
+  res.render('index', { title: 'Artemis Glitter' })
 };
 
 
@@ -12,5 +12,5 @@ exports.index = function(req, res){
  * GET debug map.
  */
 exports.map = function(req, res){
-	res.render('map');
+	res.render('map', { title: 'Debug Map - Artemis Glitter' });
 };

@@ -54,7 +54,7 @@ exports.unpack = function(data) {
 	if (bits.get(27)) { unpacked.unknown9       = data.readByte(); }
 	if (bits.get(26)) { unpacked.unknown10      = data.readByte(); }
 	if (bits.get(25)) { unpacked.unknown11      = data.readByte(); }
-	if (bits.get(24)) { unpacked.unknown12      = data.readLong(); }
+	if (bits.get(24)) { unpacked.unknown12      = data.readFloat();}
 	
 	if (bits.get(39)) { unpacked.unknown13      = data.readLong(); }
 	if (bits.get(38)) { unpacked.unknown14      = data.readLong(); }
