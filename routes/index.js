@@ -14,3 +14,13 @@ exports.index = function(req, res){
 exports.map = function(req, res){
 	res.render('map', { title: 'Debug Map - Artemis Glitter' });
 };
+
+
+
+
+/*
+ * GET Bearings and Distances table.
+ */
+exports.bearingTable = function(req, res){
+	res.render('bearing-table', { title: 'Bearing Table - Artemis Glitter' });
+};

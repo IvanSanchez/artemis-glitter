@@ -1,4 +1,8 @@
 
+/// TODO: Provide some capability to fetch the known world model from the Glitter server.
+
+
+
 var socket = io.connect();
 
 
@@ -13,7 +17,8 @@ var model = {
 	eventHandlers: {
 		newEntity: [],
 		updateEntity: [],
-		destroyEntity: []
+		destroyEntity: [],
+		newOrUpdateEntity: []
 	}
 };
 
@@ -48,6 +53,9 @@ function off(eventType, fn) {
 
 
 socket.on('gameOver', function(){
+	/// TODO: Decide whether to call the destroyEntity event,
+	///   or if the game server sending the destroyObject packet
+	///   will be enough.
 	model.entities = {};
 	model.comms = {};
 	model.intel = {};
@@ -68,6 +76,7 @@ function updateEntity(data, type) {
 		model.entities[data.id] = data;
 		model.entities[data.id].entityType = type;
 		model.fireEvents('newEntity', data);
+		model.fireEvents('newOrUpdateEntity', data);
 		return;
 	}
 	
@@ -75,8 +84,9 @@ function updateEntity(data, type) {
 		/// TODO: Log to console if some unknown value changes, 
 		///   to help identify more fields.
 		model.entities[data.id][key] = data[key];
-		model.fireEvents('updateEntity', data);
 	}
+	model.fireEvents('updateEntity', model.entities[data.id]);
+	model.fireEvents('newOrUpdateEntity', model.entities[data.id]);
 };
 
 
@@ -89,6 +99,11 @@ socket.on('playerUpdate', function (data) {
 socket.on('npcUpdate', function (data) {
 	// Entity type 4 = NPC
 	updateEntity(data, 4);
+});
+
+socket.on('stationUpdate', function (data) {
+	// Entity type 5 = Deep Space Station
+	updateEntity(data, 5);
 });
 
 socket.on('beamFired', function (data) {
