@@ -36,9 +36,14 @@ model.on('newOrUpdateEntity', function(data){
 		if (!playerShipID) {return;}
 		var row = document.getElementById( data.id );
 		if (!row) {
+			/// FIXME: Add row only if room left
+			/// If not, check for current maximum distance
+			/// and replace row with max distance with new
+			/// row. Goal is to have an always-unordered
+			/// table with only the nearest ships.
 			// Add row
 			var table = document.getElementById('bearing-table');
-			row = table.insertRow();
+			row = table.tBodies[0].insertRow();
 			row.id = data.id;
 		}
 		
@@ -48,17 +53,22 @@ model.on('newOrUpdateEntity', function(data){
 			data.posX, 
 			data.posZ);
 		
-		console.log(
-			data.shipName,
-			model.entities[playerShipID].posX, 
-			model.entities[playerShipID].posZ, 
-			data.posX, 
-			data.posZ);
+// 		console.log(
+// 			data.shipName,
+// 			model.entities[playerShipID].posX, 
+// 			model.entities[playerShipID].posZ, 
+// 			data.posX, 
+// 			data.posZ);
 		
 		var str;
-		str  = '<td>' + data.shipName;
-		str += '<td>' + Math.round(radianToDegrees(brgDst[0])*10)/10;
-		str += '<td>' + Math.round(brgDst[1]);
+		if (data.shipName)
+			str = '<td>' + data.shipName;
+		else
+			str = '<td>';
+		str += '<td>' + radianToDegrees(brgDst[0]);
+		str += '<td>' + distanceToKs(brgDst[1]);
+		str += '<td>' + radianToDegrees(data.heading);
+// 		str += '<td>' + parseInt(data.forShields) + '/' + parseInt(data.aftShields);
 		
 		row.innerHTML = str;
 	}
@@ -70,7 +80,17 @@ model.on('newOrUpdateEntity', function(data){
 
 model.on('destroyEntity', function(data){
 	/// FIXME!!!
-	console.log('Destroyed entity in world model: ', data);
+// 	console.log('Destroyed entity in world model: ', data);
+	
+	var row = document.getElementById(data.id);
+	if (row) {
+		var table = document.getElementById('bearing-table');
+		row = table.deleteRow(row.rowIndex);
+	}
+	if (data.id == playerShipID) {
+		playerShipID = null;
+	}
 });
+
 
 

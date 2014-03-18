@@ -1,0 +1,43 @@
+body {
+	margin:0; padding:0;
+}
+
+
+table {
+	width: 99vw;
+	max-height:100vw;
+	margin: 0.5vw;
+	table-layout:fixed;
+}
+
+
+table td, table th {
+	margin: 0 1ex;
+	width: 20%;
+	max-width: 20%;
+	font-size: 5.75vw;
+	overflow: hidden;
+	text-overflow: "-";
+	
+/* 	border: 1px solid cyan; */
+}
+
+table td {
+	text-align: right;
+	color: #c0c0c0;
+}
+
+table th {
+	text-align: center;
+	color: white;
+}
+
+tr.red td {
+	color: red;
+}
+tr.yellow td {
+	color: yellow;
+}
+tr.green td {
+	color: green;
+}

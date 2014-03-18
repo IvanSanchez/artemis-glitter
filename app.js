@@ -6,7 +6,8 @@
 var express = require('express')
   , routes = require('./routes')
   , artemisNet = require('./artemisNet')
-  , artemisModel = require('./artemisModel');
+//   , artemisModel = require('./artemisModel');
+  , artemisModel = require('./public/javascripts/worldmodel');
 
 var app = module.exports = express();
 
@@ -31,6 +32,7 @@ app.configure('production', function(){
 // Routes
 console.log(routes.index);
 app.get('/', routes.index);
+app.get('/model', artemisModel.returnModelAsJSON);
 app.get('/map', routes.map);
 app.get('/bearing-table', routes.bearingTable);
 

@@ -1,11 +1,23 @@
 
-/// TODO: Provide some capability to fetch the known world model from the Glitter server.
+// Implements a persistent world model on top of the low-level network
+//   interface.
+
+var iface;
+var onBrowser = true;
+
+try {
+	// Running on browser, "io" is defined
+	iface = io.connect();
+}
+catch(e) {
+	// Runnint on node.js
+	iface = require('../../artemisNet');
+	onBrowser = false;
+}
 
 
-
-var socket = io.connect();
-
-
+// Holds all known data for all known entities.
+// The key of each one is the numeric ID of the entity.
 var model = {
 	// Holds all known data for all known entities.
 	// The key of each one is the numeric ID of the entity.
@@ -51,27 +63,21 @@ function off(eventType, fn) {
 }
 
 
-
-socket.on('gameOver', function(){
+iface.on('gameOver', function(){
 	/// TODO: Decide whether to call the destroyEntity event,
 	///   or if the game server sending the destroyObject packet
 	///   will be enough.
 	model.entities = {};
 	model.comms = {};
 	model.intel = {};
-	/// TODO: Write all info to a file for forensics and/or post-mortem data mining.
 	console.log('Game over, clearing world model');
 });
 
 
-socket.on('destroyObject', function(data){
-	/// TODO: Somehow log this
-	delete(model.entities[data.id]);
-	model.fireEvents('destroyEntity', data);
-});
-
-
-function updateEntity(data, type) {
+function updateEntity(data, type){
+	if (!data) {return;}
+// 	console.log(data);
+	
 	if (!model.entities.hasOwnProperty(data.id)) {
 		model.entities[data.id] = data;
 		model.entities[data.id].entityType = type;
@@ -79,7 +85,6 @@ function updateEntity(data, type) {
 		model.fireEvents('newOrUpdateEntity', data);
 		return;
 	}
-	
 	for (var key in data) {
 		/// TODO: Log to console if some unknown value changes, 
 		///   to help identify more fields.
@@ -91,25 +96,68 @@ function updateEntity(data, type) {
 
 
 
-socket.on('playerUpdate', function (data) {
+
+
+iface.on('playerUpdate', function (data) {
 	// Entity type 1 = Player ship
 	updateEntity(data, 1);
 });
 
-socket.on('npcUpdate', function (data) {
+iface.on('npcUpdate', function (data) {
 	// Entity type 4 = NPC
 	updateEntity(data, 4);
 });
 
-socket.on('stationUpdate', function (data) {
+iface.on('stationUpdate', function (data) {
 	// Entity type 5 = Deep Space Station
 	updateEntity(data, 5);
 });
 
-socket.on('beamFired', function (data) {
+iface.on('beamFired', function (data) {
 	// Protocol doesn't cover beams, so let's arbitrarily set -1
 	updateEntity(data, -1);
 });
+
+
+iface.on('destroyObject', function (data) {
+	
+	delete(model.entities[data.id]);
+	model.fireEvents('destroyEntity', data);
+});
+
+
+
+
+
+if (onBrowser) {
+	// Running on browser
+	/// FIXME: Request persistent model from server.
+	function receiveModel() {
+// 		console.log(this);
+// 		console.log(this.responseText);
+		var receivedModel = JSON.parse(this.responseText);
+		model.entities = receivedModel.entities;
+		model.comms    = receivedModel.comms;
+		model.intel    = receivedModel.intel;
+		for (i in model.entities) {
+			model.fireEvents('newEntity', model.entities[i]);
+			model.fireEvents('newOrUpdateEntity', model.entities[i]);
+		}
+	}
+
+	var oReq = new XMLHttpRequest();
+	oReq.onload = receiveModel;
+	oReq.open("get", "./model", true);
+	oReq.send();
+}
+else {
+	// Runnint on node.js
+	exports.model = model;
+	exports.returnModelAsJSON = function(req, res){
+		res.write(JSON.stringify(model));
+		res.end();
+	};
+}
 
 
 
