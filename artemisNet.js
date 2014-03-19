@@ -10,6 +10,8 @@ var serverAddr = null;
 // Whether to retry connections to the server
 var retry = false;
 
+// Placeholder for the socket object
+var sock;
 
 
 var eventHandlers = {
@@ -112,9 +114,14 @@ function onPacket(buffer) {
 		}
 	}
 	
-	if (packetDef) {
+// 	if (typeof header.subtype == 'number') console.log(header.type.toString(16), header.subtype.toString(16));
+// 	else console.log(header.type.toString(16), null);
+	
+	if (packetDef !== null) {
 		var packet = packetDef.unpack(data);
 		var packetType = packetDef.name;
+		
+
 		
 		// Show contents of packet, for debugging
 // 		if (packet)
@@ -134,8 +141,18 @@ function onPacket(buffer) {
 // 			}
 // 		}
 		
-		fireEvents(packetType, packet);
-		fireEvents('packet', packet, packetType);
+		// Some packets, particularly the stationUpdate one,
+		//  may return more than one payload.
+		if (Array.isArray(packet)) {
+			for (i in packet) {
+				fireEvents(packetType, packet[i]);
+				fireEvents('packet', packet[i], packetType);
+			}
+		} else {
+			fireEvents(packetType, packet);
+			fireEvents('packet', packet, packetType);
+		}
+		
 	} else {
 		console.error('Unknown packet type: ', header.type.toString(16), ', subtype: ', header.subtype);
 		
@@ -159,16 +176,59 @@ function onPacket(buffer) {
 
 function onDisconnect(){
 	console.log('Disconnected from server!');
+	fireEvents('gameOver');
 	fireEvents('disconnect');
 	if (retry) {
 		console.error('Trying to reconnect');
 		setTimeout(function(){connect(serverAddr,true)}, 1000);
 	}
-};
+}
+
+
+// Given a packet name and structure, pack it into a buffer and send it.
+// Will call the underlying packet 'pack' function.
+function emit(packetName, data) {
+	if (!packetsByName.hasOwnProperty(packetName)) {
+		return false;
+	}
+	var packet = packetsByName[ packetName ];
+	if (!packet.pack) {
+		return false;
+	}
+	
+	// Declare a buffer big enough, and wrap it with our helpers.
+	var writer = new reader( new Buffer(2048) );	// Yes, yes, I know the naming doesn't make any sense.
+	writer.writeLong(0xdeadbeef);	// Magic number
+	writer.writeLong(0);	/// packetLength FIXME!!! Will need to re-write with real length
+	writer.writeLong(2);	// Origin = client (not server)
+	writer.writeLong(0);	// Unknown
+	writer.writeLong(0);	/// bytesRemaining FIXME!!! Will need to re-write with real length
+	writer.writeLong( packet.type );
+	
+	if (packet.subtypeLength == 1) {
+		writer.writeByte( packet.subtype );
+	} else if (packet.subtypeLength == 4) {
+		writer.writeLong( packet.subtype );
+	}
+	
+	packet.pack( writer, data );
+	
+	// Re-write packetLength
+	writer.buffer.writeUInt32LE(writer.pointer, 4);
+	
+	// Re-write remainingBytes
+	writer.buffer.writeUInt32LE(writer.pointer - 20, 16);
+	
+	// Finally, send the useful part of the buffer.
+	sock.write( writer.buffer.slice(0,writer.pointer) );
+}
+
 
 
 var knownPackets = {};
 var knownSubPackets = {};
+
+var packetsByName = {};
 
 // Register a new packet type (usually from an external file).
 // Expects an object with properties:
@@ -200,6 +260,10 @@ function registerPacketType( packet ) {
 	if (!eventHandlers.hasOwnProperty(packet.name)) {
 		eventHandlers[ packet.name ] = [];
 	}
+	
+	packetsByName[ packet.name ] = packet;
+	/// TODO!!! Implement the translation of browser-side "emit"s to
+	///   glitter-side "emit"s.
 }
 
 
@@ -232,6 +296,7 @@ recursiveRegisterPacket(__dirname + '/packets');
 exports.connect = connect;
 exports.on      = on;
 exports.off     = off;
+exports.emit    = emit;
 
 
 

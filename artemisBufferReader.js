@@ -1,5 +1,5 @@
 
-// Helper class for reading packets.
+// Helper class for reading/writing packets.
 // Not really needed, but makes the code much more readable.
 // It basically offers a wrapper of Buffer, with an internal
 //   pointer that is updated as more bytes are consumed.
@@ -63,6 +63,8 @@ artemisBufferReader.prototype.readBitArray = function(bytes) {
 	return bits;
 }
 
+
+
 // Like readByte, but doesn't advance the pointer. Used for checking array bounds.
 artemisBufferReader.prototype.peekByte = function() {
 	return this.buffer.readUInt8(this.pointer);
@@ -72,6 +74,46 @@ artemisBufferReader.prototype.peekByte = function() {
 artemisBufferReader.prototype.peekShort = function() {
 	return this.buffer.readUInt16LE(this.pointer);
 };
+
+
+
+
+
+artemisBufferReader.prototype.writeByte = function(data) {
+	var number = this.buffer.writeUInt8(data,this.pointer);
+	this.pointer += 1;
+	return number;
+};
+
+artemisBufferReader.prototype.writeShort = function(data) {
+	var number = this.buffer.writeUInt16LE(data,this.pointer);
+	this.pointer += 2;
+	return number;
+};
+
+artemisBufferReader.prototype.writeLong = function(data) {
+	var number = this.buffer.writeUInt32LE(data,this.pointer);
+	this.pointer += 4;
+	return number;
+};
+
+artemisBufferReader.prototype.writeFloat = function(data) {
+	var number = this.buffer.writeFloatLE(data,this.pointer);
+	this.pointer += 4;
+	return number;
+};
+
+/// FIXME!!!
+// artemisBufferReader.prototype.writeBitArray = function(bytes) {
+// 	var slice = this.buffer.slice(this.pointer, this.pointer+bytes);
+// 	var bits = bitarray.fromBuffer(slice);
+// 	this.pointer += bytes;
+// 	return bits;
+// }
+
+
+
+
 
 
 exports.artemisBufferReader = artemisBufferReader;

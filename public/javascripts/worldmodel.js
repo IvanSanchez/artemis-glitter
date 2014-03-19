@@ -22,9 +22,12 @@ var model = {
 	// Holds all known data for all known entities.
 	// The key of each one is the numeric ID of the entity.
 	entities: {},
-
 	comms: {},	/// FIXME
 	intel: {},	/// FIXME
+	playerShipID: null,
+	playerShipIndex: null,
+	engineering: {id: null},
+	weapons: {id: null},
 	
 	eventHandlers: {
 		newEntity: [],
@@ -70,6 +73,9 @@ iface.on('gameOver', function(){
 	model.entities = {};
 	model.comms = {};
 	model.intel = {};
+	model.playerShipID = null;
+	model.engineering  = {id: null};
+	model.weapons      = {id: null};
 	console.log('Game over, clearing world model');
 });
 
@@ -118,7 +124,6 @@ iface.on('beamFired', function (data) {
 	updateEntity(data, -1);
 });
 
-
 iface.on('destroyObject', function (data) {
 	
 	delete(model.entities[data.id]);
@@ -126,19 +131,37 @@ iface.on('destroyObject', function (data) {
 });
 
 
+// Whenever we receive info for which stations are taken, check
+//   if we're an active station on that ship
+iface.on('consoleStatus', function(data){
+	// 0 = available
+	// 1 = mine
+	// 2 = unavailable
+	
+	if (data.mainScreen     == 1 ||
+	    data.helm           == 1 ||
+	    data.weapons        == 1 ||
+	    data.engineering    == 1 ||
+	    data.science        == 1 ||
+	    data.communications == 1) {
+		model.playerShipIndex = data.playerShip;
+	}
+
+});
 
 
 
 if (onBrowser) {
 	// Running on browser
-	/// FIXME: Request persistent model from server.
 	function receiveModel() {
-// 		console.log(this);
-// 		console.log(this.responseText);
 		var receivedModel = JSON.parse(this.responseText);
 		model.entities = receivedModel.entities;
 		model.comms    = receivedModel.comms;
 		model.intel    = receivedModel.intel;
+		model.playerShipID    = receivedModel.playerShipID;
+		model.playerShipIndex = receivedModel.playerShipIndex;
+		model.engineering = receivedModel.engineering;
+		model.weapons = receivedModel.weapons;
 		for (i in model.entities) {
 			model.fireEvents('newEntity', model.entities[i]);
 			model.fireEvents('newOrUpdateEntity', model.entities[i]);
@@ -157,6 +180,7 @@ else {
 		res.write(JSON.stringify(model));
 		res.end();
 	};
+
 }
 
 

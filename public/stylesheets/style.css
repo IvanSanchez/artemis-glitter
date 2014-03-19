@@ -1,3 +1,18 @@
+
+@font-face {
+	font-family: 'Xolonium';
+        src: url('/fonts/Xolonium-Bold.otf') format('opentype');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Xolonium';
+        src: url('/fonts/Xolonium-Regular.otf') format('opentype');
+	font-weight: normal;
+	font-style: normal;
+}
+
 body {
   font: 14px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
   
@@ -9,4 +24,3 @@ body {
 a {
   color: #80FFFF;
 }
-

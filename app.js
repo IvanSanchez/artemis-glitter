@@ -36,13 +36,6 @@ app.get('/model', artemisModel.returnModelAsJSON);
 app.get('/map', routes.map);
 app.get('/bearing-table', routes.bearingTable);
 
-// app.listen(3000, function(){
-//   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
-// });
-
-
-
-
 
 
 // Set up the socket.io stuff
@@ -51,10 +44,11 @@ app.get('/bearing-table', routes.bearingTable);
 // Socket.io is clever enough to not send unneeded messages to
 //   clients
 
-// console.log(io);
-
 var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
+
+io.set('log level', 1); // reduce logging
+
 // io.on('connection', function(){ // … });
 server.listen(3000);
 
@@ -70,7 +64,27 @@ io.sockets.on('connection', function (s){
 
 artemisNet.on('connect', function(){console.log('We seem to have connected.')});
 
-artemisNet.on('welcome', function(){console.log('We seem to have been welcomed.')});
+artemisNet.on('welcome', function(){
+	console.log('We seem to have been welcomed.')
+	
+	
+	/// FIXME!!! This is the console selection code, and should not
+	///   be placed here.
+	artemisNet.emit('setStation', {station:0, selected:1});	// Main Scr
+// 	artemisNet.emit('setStation', {station:1, selected:1}); // Helm
+// 	artemisNet.emit('setStation', {station:2, selected:1}); // Weap
+// 	artemisNet.emit('setStation', {station:3, selected:1}); // Engine
+	artemisNet.emit('setStation', {station:4, selected:1}); // Sci
+	artemisNet.emit('setStation', {station:5, selected:1}); // Comms
+	artemisNet.emit('setStation', {station:6, selected:1}); // Observ
+	artemisNet.emit('setStation', {station:7, selected:1}); // Capt
+// 	artemisNet.emit('setStation', {station:8, selected:1}); // GM
+	
+	
+	
+	console.log('Consoles have been requested.')
+	
+	});
 
 /// FIXME: Allow connecting to somewhere else than localhost
 artemisNet.connect('localhost', true);

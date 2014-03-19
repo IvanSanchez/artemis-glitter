@@ -17,7 +17,7 @@ exports.unpack = function(data) {
 // 	Values for availability are: 0 = available, 1 = mine, 2 = unavailable
 	
 	return {
-		playerShip: data.readLong(),
+		playerShip:     data.readLong(),
 		
 		mainScreen:     data.readByte(),
 		helm:           data.readByte(),

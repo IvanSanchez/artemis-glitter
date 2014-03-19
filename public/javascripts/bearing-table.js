@@ -26,13 +26,19 @@ function getStyle(type,name) {
 var playerShipID = null;
 
 
+/// FIXME!!!
+/// This needs to be re-done. The Deep Space stations don't send any updates,
+///   yet the distance and bearing from the Artemis changes as the Artemis
+///   moves. Even more troublesome, some enemy ships don't send any updates
+///   when moving on a straight line....
+
 model.on('newOrUpdateEntity', function(data){
 	
 	if (!playerShipID && data.entityType == 1) {
 		/// TODO: Check that the friendly ship is actually
 		///   our own, and not any of the other 7.
 		playerShipID = data.id;
-	} else if (data.entityType == 4) {
+	} else if (data.entityType == 4 || data.entityType == 5) {
 		if (!playerShipID) {return;}
 		var row = document.getElementById( data.id );
 		if (!row) {
@@ -79,9 +85,6 @@ model.on('newOrUpdateEntity', function(data){
 
 
 model.on('destroyEntity', function(data){
-	/// FIXME!!!
-// 	console.log('Destroyed entity in world model: ', data);
-	
 	var row = document.getElementById(data.id);
 	if (row) {
 		var table = document.getElementById('bearing-table');
