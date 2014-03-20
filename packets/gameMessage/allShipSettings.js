@@ -1,5 +1,5 @@
 
-exports.name = 'allShipsSettings';
+exports.name = 'allShipSettings';
 
 exports.type = 0xf754c8fe;
 
@@ -12,8 +12,7 @@ exports.unpack = function(data) {
 	
 	var unpacked = {};
 	
-	// All playerShips around are 1-based and not 0-based
-	for (var playerShip = 1; playerShip <= 8; playerShip++) {
+	for (var playerShip = 0; playerShip <= 7; playerShip++) {
 		
 		var driveType = data.readLong();
 		var shipType  = data.readLong();
@@ -29,8 +28,6 @@ exports.unpack = function(data) {
 	}
 	
 	return unpacked;
-	
-
 }
 
 

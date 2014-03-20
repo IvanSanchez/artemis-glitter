@@ -24,10 +24,13 @@ var model = {
 	entities: {},
 	comms: {},	/// FIXME
 	intel: {},	/// FIXME
-	playerShipID: null,
-	playerShipIndex: null,
-	engineering: {id: null},
-	weapons: {id: null},
+	
+	playerShipID: null,	// Tipically around 1010 or so.
+	playerShipIndex: null,	// From 0 to 7
+	engineering: {id: null},	// Status of own engineering console
+	weapons: {id: null},	// Status of own weapons console
+	allShipSettings: [],	// Used only during pre-game during ship selection screen
+	gameStarted: false,
 	
 	eventHandlers: {
 		newEntity: [],
@@ -76,7 +79,18 @@ iface.on('gameOver', function(){
 	model.playerShipID = null;
 	model.engineering  = {id: null};
 	model.weapons      = {id: null};
+	model.gameStarted  = false;
 	console.log('Game over, clearing world model');
+});
+
+iface.on('gameStart', function(){
+	model.gameStarted  = true;
+	console.log('Game started.');
+});
+
+iface.on('gameRestart', function(){
+	model.gameStarted  = true;
+	console.log('Game restarted.');
 });
 
 
@@ -106,6 +120,7 @@ function updateEntity(data, type){
 
 iface.on('playerUpdate', function (data) {
 	// Entity type 1 = Player ship
+	/// TODO: Update playerShipID if data matches with playerShipIndex
 	updateEntity(data, 1);
 });
 
@@ -125,29 +140,29 @@ iface.on('beamFired', function (data) {
 });
 
 iface.on('destroyObject', function (data) {
-	
 	delete(model.entities[data.id]);
 	model.fireEvents('destroyEntity', data);
 });
 
 
-// Whenever we receive info for which stations are taken, check
-//   if we're an active station on that ship
+// The consoleStatus packet only is sent for the current vessel,
+//   and we won't interactively select the consoles, so...
 iface.on('consoleStatus', function(data){
-	// 0 = available
-	// 1 = mine
-	// 2 = unavailable
-	
-	if (data.mainScreen     == 1 ||
-	    data.helm           == 1 ||
-	    data.weapons        == 1 ||
-	    data.engineering    == 1 ||
-	    data.science        == 1 ||
-	    data.communications == 1) {
-		model.playerShipIndex = data.playerShip;
-	}
-
+	// The index received here is 1-based, whereas everywhere else is 0-based
+	model.playerShipIndex = data.playerShip - 1;
+	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
 });
+
+iface.on('destroyObject', function (data) {
+	delete(model.entities[data.id]);
+	model.fireEvents('destroyEntity', data);
+});
+
+
+iface.on('allShipSettings', function (data) {
+	model.allShipSettings = data;
+});
+
 
 
 
@@ -160,20 +175,33 @@ if (onBrowser) {
 		model.intel    = receivedModel.intel;
 		model.playerShipID    = receivedModel.playerShipID;
 		model.playerShipIndex = receivedModel.playerShipIndex;
-		model.engineering = receivedModel.engineering;
-		model.weapons = receivedModel.weapons;
+		model.engineering     = receivedModel.engineering;
+		model.weapons         = receivedModel.weapons;
+		model.allShipSettings = receivedModel.allShipSettings;
+		model.gameStarted     = receivedModel.gameStarted
 		for (i in model.entities) {
 			model.fireEvents('newEntity', model.entities[i]);
 			model.fireEvents('newOrUpdateEntity', model.entities[i]);
 		}
+		
+		// Some socket-io hackish tricks to fire some fake events
+		for (var i in iface.$events.allShipSettings) {
+			iface.$events.allShipSettings[i](model.allShipSettings);
+		}
+		
+// 		if (model.gameStarted) {
+// 			iface.emit('gameRestart');
+// 			iface.emit('gameStart');
+// 		} else {
+// 			iface.emit('gameOver');
+// 		}
 	}
 
 	var oReq = new XMLHttpRequest();
 	oReq.onload = receiveModel;
 	oReq.open("get", "./model", true);
 	oReq.send();
-}
-else {
+} else {
 	// Runnint on node.js
 	exports.model = model;
 	exports.returnModelAsJSON = function(req, res){

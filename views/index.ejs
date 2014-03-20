@@ -1,7 +1,41 @@
 
 <% include layout.ejs -%>
 
-<h1>Artemis-glitter console selection</h1>
-<p><a href='map'>Debug map</a></p>
-<p><a href='bearing-table'>Bearing-distance table</a></p>
+<div style='overflow-y: auto; height:99vh'>
 
+<h1>Welcome to Artemis Glitter</h1>
+
+<p id='ownaddress'></p>
+
+<div style='float:left; width:40%; padding:0 5%; min-width:200px;'>
+<h2>Server and ship selection</h2>
+
+<p>Artemis server: 
+	<input id='serveraddr' style=''>
+	<button id='connect' style=''>Connect</button>
+	<button id='disconnect' style='display:none'>Disconnect</button>
+	<span id='connecting' style='display:none'>Connecting...</span>
+</p>
+
+<!-- <p>Server status: <span id='status'></span></p> -->
+
+<div id='vessel-select'>
+<p>Vessel: <select id='playershipname'></select></p>
+</div>
+
+
+</div>
+
+<div style='float:left; width:40%; padding:0 5%; min-width:200px;'>
+<h2>Console selection</h2>
+<ul>
+<li><a href='map'>Debug map</a>
+<li><a href='bearing-table'>Bearing-distance table</a>
+</div>
+
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/worldmodel.js"></script>
+<script src="/javascripts/serverstatus.js"></script>

@@ -14,9 +14,11 @@ var retry = false;
 var sock;
 
 
+// Note that "connect" and "disconnect" would conflict on the
+//   browser side with the built-in events for socket.io
 var eventHandlers = {
-	"connect": [],
-	"disconnect": [],
+	"connected": [],
+	"disconnected": [],
 	"connectError": [],
 	"packet": []
 };
@@ -30,20 +32,28 @@ function connect (addr, r) {
 	console.log('Connecting to server: ', addr);
 	
 	retry = r;
+	serverAddr = addr;
 	
 	sock = net.connect({host: addr, port:2010}, function(){
 		console.log('Connected to server: ', addr);
 		sock.on('data', onPacket);
 		sock.on('end', onDisconnect);
-		fireEvents('connect');
+		fireEvents('connected');
 	}).on('error', function(){
 		fireEvents('connectError');
 		console.error('Connection refused');
-		if (r) {
+		if (retry) {
 			console.error('Trying to reconnect');
-			setTimeout(function(){connect(addr,r)}, 1000);
+			setTimeout(function(){connect(serverAddr,retry)}, 1000);
 		}
 	});
+}
+
+function disconnect (addr, r) {
+	retry = false;
+	if (sock) {
+		sock.end();
+	}
 }
 
 
@@ -60,7 +70,12 @@ function fireEvents(eventType, data, packetType) {
 
 // Attach an event listener
 function on(eventType, fn) {
-	eventHandlers[eventType].push(fn);
+	if (eventHandlers.hasOwnProperty(eventType)) {
+		eventHandlers[eventType].push(fn);
+// 		console.log('Attached event to packet type: ', eventType);
+	} else {
+// 		console.log('No registered packet type: ', eventType);
+	}
 }
 
 // Detach an event listener
@@ -113,9 +128,6 @@ function onPacket(buffer) {
 			packetDef = knownPackets[header.type];
 		}
 	}
-	
-// 	if (typeof header.subtype == 'number') console.log(header.type.toString(16), header.subtype.toString(16));
-// 	else console.log(header.type.toString(16), null);
 	
 	if (packetDef !== null) {
 		var packet = packetDef.unpack(data);
@@ -177,7 +189,7 @@ function onPacket(buffer) {
 function onDisconnect(){
 	console.log('Disconnected from server!');
 	fireEvents('gameOver');
-	fireEvents('disconnect');
+	fireEvents('disconnected');
 	if (retry) {
 		console.error('Trying to reconnect');
 		setTimeout(function(){connect(serverAddr,true)}, 1000);
@@ -294,6 +306,7 @@ recursiveRegisterPacket(__dirname + '/packets');
 
 
 exports.connect = connect;
+exports.disconnect = disconnect;
 exports.on      = on;
 exports.off     = off;
 exports.emit    = emit;

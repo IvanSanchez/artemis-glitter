@@ -15,12 +15,15 @@
 
 body {
   font: 14px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
-  
   background:#000020;	/* Artemis' dark blue */
   color: white;
   overflow: hidden;
 }
 
 a {
-  color: #80FFFF;
+	color: #80FFFF;
+}
+
+h1, h2 {
+	text-align: center;
 }
