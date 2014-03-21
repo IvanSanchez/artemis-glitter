@@ -26,3 +26,11 @@ function radianToDegrees(rad) {
 	return degrees.toFixed(1); 
 }
 
+
+
+
+
+
+
+
+

@@ -102,21 +102,20 @@ function updateEntity(data, type){
 		model.entities[data.id] = data;
 		model.entities[data.id].entityType = type;
 		model.fireEvents('newEntity', data);
-		model.fireEvents('newOrUpdateEntity', data);
-		return;
+		
+// 		console.log('New contact: ', data.shipName);
+	} else {
+		for (var key in data) {
+			/// TODO: Log to console if some unknown value changes, 
+			///   to help identify more fields.
+			model.entities[data.id][key] = data[key];
+		}
+		model.fireEvents('updateEntity', model.entities[data.id]);
 	}
-	for (var key in data) {
-		/// TODO: Log to console if some unknown value changes, 
-		///   to help identify more fields.
-		model.entities[data.id][key] = data[key];
-	}
-	model.fireEvents('updateEntity', model.entities[data.id]);
+	model.entities[data.id].timestampUpdated = (new Date()).getTime();
+	
 	model.fireEvents('newOrUpdateEntity', model.entities[data.id]);
 };
-
-
-
-
 
 iface.on('playerUpdate', function (data) {
 	// Entity type 1 = Player ship
@@ -150,7 +149,7 @@ iface.on('destroyObject', function (data) {
 iface.on('consoleStatus', function(data){
 	// The index received here is 1-based, whereas everywhere else is 0-based
 	model.playerShipIndex = data.playerShip - 1;
-	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
+// 	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
 });
 
 iface.on('destroyObject', function (data) {
@@ -162,6 +161,38 @@ iface.on('destroyObject', function (data) {
 iface.on('allShipSettings', function (data) {
 	model.allShipSettings = data;
 });
+
+
+
+
+
+
+// Given a pair of coords, heading (in radians), speed, and last 
+//   known time, extrapolate a new position.
+// This assumes that the timestamp of the last known time includes
+//   coordinates and speed.
+// Also, this assumes a flat world model. I'm not dealing with 3D 
+//   just yet.
+// I wonder why the coordinate system is X-Z based instead of X-Y based.
+// TODO: Add rate-of-turn to the mix.
+function extrapolatePosition(x,z,hdg,spd,timestamp) {
+	var now = (new Date()).getTime();
+	var diff = now - timestamp;	// In milliseconds
+	
+	// Based on my back-of-the-envelope calculations, a vessel
+	//   travelling at a velocity of 0.3 actually means about
+	//   18.5 meters/sec.
+	// So, a velocity of 1 should mean 61.7 meters per second,
+	//   or 0.0617 meters per millisecond.
+	var offset = 0.0617 * diff * spd;
+	
+	var newX = x + (offset * Math.sin(hdg));
+	var newZ = z + (offset * Math.cos(hdg));
+	
+	return ([newX, newZ]);
+}
+
+
 
 
 
@@ -201,6 +232,44 @@ if (onBrowser) {
 	oReq.onload = receiveModel;
 	oReq.open("get", "./model", true);
 	oReq.send();
+	
+	
+	
+	
+	// Automatically extrapolate vessel positions, for vessels
+	//   with a non-zero speed which haven't moved for the 
+	//   last 10 seconds.
+	/// FIXME: This doesn't take into account pausing the server!!!
+	var extrapolationTime = 1500;
+	setInterval(function(){
+		
+		var now = (new Date()).getTime();
+
+		
+		for (i in model.entities) {
+			var entity = model.entities[i];
+			
+			if (entity.velocity && 
+			    (now - entity.timestampUpdated > extrapolationTime)) {
+				
+				var newCoords = extrapolatePosition(
+					entity.posX,
+					entity.posZ,
+					entity.heading,
+					entity.velocity,
+					entity.timestampUpdated);
+				model.entities[i].posX = newCoords[0];
+				model.entities[i].posZ = newCoords[1];
+				model.entities[i].timestampUpdated = now;
+				model.fireEvents('updateEntity', model.entities[i]);
+				model.fireEvents('newOrUpdateEntity', model.entities[i]);
+			}
+		} 
+		
+	}, extrapolationTime);
+		
+	
+	
 } else {
 	// Runnint on node.js
 	exports.model = model;
@@ -209,6 +278,10 @@ if (onBrowser) {
 		res.end();
 	};
 
+	
+	// Import angles & trigonometry helper library.
+// 	var angles = require('./angles');
+	
 }
 
 

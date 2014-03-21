@@ -154,7 +154,6 @@ function addOrUpdateMapEntity(data) {
 	var entity = model.entities[id]
 	
 	if (!entity.hasOwnProperty('ol3Feature')) {
-		console.log('New entity in map : ', data);
 		/// FIXME: Add HDG, surrender status.
 		var feat = entity.ol3Feature = new ol.Feature({
 		    'geometry': geom,

@@ -130,8 +130,19 @@ function onPacket(buffer) {
 	}
 	
 	if (packetDef !== null) {
-		var packet = packetDef.unpack(data);
+		var packet = {};
 		var packetType = packetDef.name;
+		// Unfortunately, there might be some bugs still present
+		//   with random crashes involving reading outside the
+		//   recv buffer, so let's wrap this into a try-catch...
+		try {
+			packet = packetDef.unpack(data);
+		} catch(e) {
+			console.error('Aaaaiiieeeee, something went wrong while parsing a packet of type ' + packetType + '!');
+			console.error(e);
+			console.error(data);
+		}
+		
 		
 
 		

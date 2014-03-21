@@ -64,7 +64,7 @@ oReq.send();
 // Fetch the server's public IPs so we can display a helper message at the top
 function receivePublicIPs() {
 	var publicIPs = JSON.parse(this.responseText);
-	var ownAddress = document.getElementById()
+	var ownAddress = document.getElementById('ownaddress')
 	
 	if (publicIPs.length == 0) {
 		ownaddress.innerHTML = "Your computer doesn't seem to be connected to any network. You might want to look into that, then reload this webpage."
@@ -79,6 +79,7 @@ function receivePublicIPs() {
 	for (i in publicIPs) {
 		str += "<li><strong><big>http://" + publicIPs[0] + ":3000</big></strong>";
 	}
+	ownaddress = str;
 }
 
 var oReq = new XMLHttpRequest();

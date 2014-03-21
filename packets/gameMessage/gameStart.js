@@ -1,4 +1,7 @@
 
+// FIXME: This doesn't seem to be sent on game restart.
+// It is, however, sent whenever the player fires a torp, 
+
 exports.name = 'gameStart';
 
 exports.type = 0xf754c8fe;

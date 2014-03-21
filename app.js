@@ -142,3 +142,7 @@ app.get('/ship-select/:shipIndex', function(req,res){
 	grabStations();
 	res.end();
 });
+
+// We'll try connecting once to localhost, anyway.
+artemisNet.connect('localhost',false);
+
