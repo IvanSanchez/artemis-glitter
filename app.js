@@ -4,11 +4,14 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
+  , opener  = require('opener')
+  , routes  = require('./routes')
   , artemisNet = require('./artemisNet')
   , artemisModel = require('./public/javascripts/worldmodel');
 
 var app = module.exports = express();
+
+var tcpPort = 3000;
 
 // Configuration
 app.configure(function(){
@@ -47,7 +50,7 @@ var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 io.set('log level', 1); // reduce logging
 
-server.listen(3000);
+server.listen(tcpPort);
 
 
 // When socket.io is ready: for every packet we receive from the
@@ -146,3 +149,7 @@ app.get('/ship-select/:shipIndex', function(req,res){
 // We'll try connecting once to localhost, anyway.
 artemisNet.connect('localhost',false);
 
+
+
+// Once everything's ready, try open the default browser with the main page.
+opener('http://localhost:' + tcpPort);
