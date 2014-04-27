@@ -23,7 +23,7 @@
 // More work needs to be done - i.e. making un-ID'ed vessels
 //   appear white and color vessels depending of faction and 
 //   surrender status
-function getStyle(type,name) {
+function getStyle(type,isEnemy,name) {
 
 	var strokeColor = '#ffffff';
 	var fillColor   = '#c0c0c0';
@@ -31,8 +31,13 @@ function getStyle(type,name) {
 		strokeColor = '#00ff00';
 		fillColor   = '#40c040';
 	} else if (type==4) {
-		strokeColor = '#ff0000';
-		fillColor   = '#c04040';
+		if (isEnemy) {
+			strokeColor = '#ff0000';
+			fillColor   = '#c04040';
+		} else {
+			strokeColor = '#00ffff';
+			fillColor   = '#40c0c0';
+		}
 	} else if (type==5) {
 		strokeColor = '#ffff00';
 		fillColor   = '#c0c040';
@@ -93,7 +98,7 @@ var vectorSource = new ol.source.Vector({
 var vectorLayer = new ol.layer.Vector({
   source: vectorSource,
   style: function(feature, resolution) {
-	return getStyle(feature.get('type'), feature.get('name'));
+	return getStyle(feature.get('type'), feature.get('isEnemy'), feature.get('name'));
   }
 });
 
@@ -159,7 +164,8 @@ function addOrUpdateMapEntity(data) {
 		    'geometry': geom,
 		    'id': data.id,
 		    'type': data.entityType,
-		    'name': data.shipName
+		    'name': data.shipName,
+		    'isEnemy': data.isEnemy
 		});
 		
 		vectorSource.addFeature(feat);

@@ -12,6 +12,57 @@ var rowID = -1;
 var entities = [];
 
 
+function getNearestUnknownVessel() {
+	var minDistance = Number.POSITIVE_INFINITY;
+	var candidate = null;
+	for (var i in model.entities) {
+		
+		// Skip own vessel and vessels already in the list
+		if (i != model.playerShipID &&
+		    entities.indexOf(i) === -1) {
+			var brgDst = posToBrgDst(
+				model.entities[model.playerShipID].posX, 
+				model.entities[model.playerShipID].posZ, 
+				model.entities[i].posX, 
+				model.entities[i].posZ
+				);
+			
+			// The distance might be NaN for entities without coordinates, e.g. beams
+			var distance = brgDst[1];
+			if (!isNaN(distance) && distance < minDistance) {
+				candidate = i;
+				minDistance = distance
+			}
+		}
+	}
+	return {id:candidate,distance:minDistance};
+}
+
+function getFurthestKnownVessel() {
+	var maxDistance = Number.NEGATIVE_INFINITY;
+	var candidate = null;
+	for (var i in model.entities) {
+		
+		// Skip own vessel and vessels already in the list
+		if (i != model.playerShipID &&
+		    entities.indexOf(i) !== -1) {
+			var brgDst = posToBrgDst(
+				model.entities[model.playerShipID].posX, 
+				model.entities[model.playerShipID].posZ, 
+				model.entities[i].posX, 
+				model.entities[i].posZ
+				);
+				
+			var distance = brgDst[1];
+			if (distance > maxDistance) {
+				candidate = i;
+				maxDistance = distance
+			}
+		}
+	}
+	return {id:candidate,distance:maxDistance};
+}
+
 var table = document.getElementById('bearing-table');
 var tbody = table.tBodies[0];
 
@@ -33,45 +84,48 @@ function updateTable(){
 		}
 		
 // 		console.log(table.offsetHeight, window.innerHeight, table.rows.offsetHeight);
-		
-		if (table.offsetHeight + table.rows[0].offsetHeight <= window.innerHeight) {
+		var rowHeight = 0;
+		if (tbody.rows.length)
+			rowHeight = tbody.rows[0].offsetHeight;
+			
+		if (table.offsetHeight + rowHeight < window.innerHeight) {
 // 			console.log('There\'s room for another row');
 			// Find the entity closer to the vessel
 			
-			var minDistance = Number.POSITIVE_INFINITY;
-			var candidate = null;
-			for (var i in model.entities) {
-				
-				// Skip own vessel and vessels already in the list
-				if (i != model.playerShipID &&
-				    entities.indexOf(i) === -1) {
-					var brgDst = posToBrgDst(
-						model.entities[model.playerShipID].posX, 
-						model.entities[model.playerShipID].posZ, 
-						model.entities[i].posX, 
-						model.entities[i].posZ
-						);
-// 					console.log('Distance to entity ', i, ' is ', brgDst[1]);
-					var distance = brgDst[1];
-					if (distance < minDistance) {
-						candidate = i;
-						minDistance = distance
-					}
-				}
-			}
+			var nearest = getNearestUnknownVessel();
 			
-			if (candidate !== null) {
+			if (nearest.id !== null) {
 // 				console.log('Should add entity ', candidate, ' to the list');
-				entities.push(candidate);
+				entities.push(nearest.id);
 				addRow();
 // 				rowID = tbody.rows.length;
 			} else {
 				// No more vessels to be added into the table
 				rowID = tbody.rows.length;
 			}
-			
+		} else if (table.offsetHeight > window.innerHeight){
+			// Extra rows, delete one.
+			// This may happen on tablets while rotating the screen.
+			var last = tbody.rows.length;
+			tbody.deleteRow(last-1);
+			entities.splice(last-1,1);
+		
 		} else {
 			// No more room in the table
+			
+			// Check if there's a vessel closer than the furthest of vessels in the table
+			var nearest  = getNearestUnknownVessel();
+			var furthest = getFurthestKnownVessel();
+			
+			if (nearest.distance < furthest.distance) {
+				var rowToReplace = entities.indexOf(furthest.id);
+// 				console.log('Replacing row ', rowToReplace, 
+// 					' from ', furthest.id, ' ', model.entities[furthest.id].shipName, ' (', furthest.distance , 
+// 					') to ', nearest.id, ' ', model.entities[nearest.id].shipName, ' (', nearest.distance , ') ');
+				
+				entities[rowToReplace] = nearest.id;
+			}
+			
 			rowID = tbody.rows.length;
 		}
 		

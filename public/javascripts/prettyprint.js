@@ -29,8 +29,14 @@ function distanceToKs (dis) {
 //   define the colours only once.
 function getColor(entity) {
 
-	if (entity.isEnemy) {
-		return '#C04040';
+	if (entity.hasOwnProperty('isEnemy')) {
+		if (entity.isEnemy) {
+			// Enemy
+			return '#C04040';
+		} else {
+			// Neutral/Ally
+			return '#40C0C0';
+		}
 	}
 	
 	
