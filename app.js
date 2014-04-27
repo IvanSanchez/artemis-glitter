@@ -37,6 +37,7 @@ app.get('/', routes.index);
 app.get('/model', artemisModel.returnModelAsJSON);
 app.get('/map', routes.map);
 app.get('/bearing-table', routes.bearingTable);
+app.get('/proximity', routes.proximity);
 
 
 
@@ -148,8 +149,8 @@ app.get('/ship-select/:shipIndex', function(req,res){
 
 // We'll try connecting once to localhost, anyway.
 // artemisNet.connect('localhost',false);
-artemisNet.connect('10.0.1.7',false);
+// artemisNet.connect('10.0.1.7',false);
 
 
 // Once everything's ready, try open the default browser with the main page.
-// opener('http://localhost:' + tcpPort);
+opener('http://localhost:' + tcpPort);

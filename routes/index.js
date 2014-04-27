@@ -7,7 +7,6 @@ exports.index = function(req, res){
 };
 
 
-
 /*
  * GET debug map.
  */
@@ -16,11 +15,17 @@ exports.map = function(req, res){
 };
 
 
-
-
 /*
  * GET Bearings and Distances table.
  */
 exports.bearingTable = function(req, res){
 	res.render('bearing-table', { title: 'Bearing Table - Artemis Glitter' });
+};
+
+
+/*
+ * GET Proximity monitor.
+ */
+exports.proximity = function(req, res){
+	res.render('proximity', { title: 'Proximity Monitor - Artemis Glitter' });
 };
