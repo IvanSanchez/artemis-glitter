@@ -87,11 +87,25 @@ function off(eventType, fn) {
 }
 
 
+var previousBuffer = null;
+
 // When a packet is received, parse its header and delegate further
 //   parsing depending on the packet type.
 function onPacket(buffer) {
 	var header = {};
+	
+	if (previousBuffer) {
+		buffer = Buffer.concat([previousBuffer, buffer]);
+// 		console.log('Concatenating previously received data, now is ',buffer);
+		previousBuffer = null;
+	}
 	var data = new reader(buffer);
+	
+	if (buffer.length < 24) {
+		console.log('End of TCP datagram reached while parsing packet headers');
+		previousBuffer = buffer;
+		return;
+	}
 	
 	header.magic          = data.readLong();
 	header.packetLength   = data.readLong();
@@ -104,11 +118,18 @@ function onPacket(buffer) {
 // 	console.log(header);
 	
 	if (header.magic != 0xdeadbeef) {
-		console.error('Bad magic number!!');
+		console.error('Bad magic number!!', header.magic);
+// 		console.log(buffer);
 		return;
 	}
 	if (header.packetLength != (header.bytesRemaining + 20)) {
 		console.error('Packet length and remaining bytes mismatch!!');
+		return;
+	}
+	
+	if (buffer.length < header.packetLength) {
+		console.log('End of TCP datagram before end of packet');
+		previousBuffer = buffer;
 		return;
 	}
 	
@@ -142,9 +163,6 @@ function onPacket(buffer) {
 			console.error(e);
 			console.error(data);
 		}
-		
-		
-
 		
 		// Show contents of packet, for debugging
 // 		if (packet)

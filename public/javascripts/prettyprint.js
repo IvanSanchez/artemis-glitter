@@ -25,7 +25,37 @@ function distanceToKs (dis) {
 
 
 
+// TODO: Refactor this and the OpenLayers style generator so we
+//   define the colours only once.
+function getColor(entity) {
 
-
-
-
+	if (entity.isEnemy) {
+		return '#C04040';
+	}
+	
+	
+	// Player vessel
+	if (entity.entityType==1) {
+		return '#40C040';
+	} 
+	
+	// Generic enemy (might not be hostile)
+	if (entity.entityType==4) {
+		return '#C04040';
+	} 
+	
+	// Station
+	if (entity.entityType==5) {
+		return '#c0c040';
+	} 
+	
+	// Mine
+	if (entity.entityType==6) {
+		return '#666666';
+	} 
+	
+	
+// 	If unknown, return grey
+	return '#666666';
+	
+};

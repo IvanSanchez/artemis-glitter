@@ -119,7 +119,12 @@ function updateEntity(data, type){
 
 iface.on('playerUpdate', function (data) {
 	// Entity type 1 = Player ship
-	/// TODO: Update playerShipID if data matches with playerShipIndex
+	
+	// Update playerShipID if data matches with playerShipIndex
+	if (data.shipNumber == model.playerShipIndex+1) {
+		model.playerShipID = data.id;
+	}	
+	
 	updateEntity(data, 1);
 });
 

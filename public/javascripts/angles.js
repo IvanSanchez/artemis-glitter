@@ -22,6 +22,9 @@ function posToBrgDst(x1, y1, x2, y2) {
 //  Pi/2 becomes 270 (west)
 //  Pi   becomes 360 (north)
 function radianToDegrees(rad) {
+	if (isNaN(rad)) {
+		return 'N/A';
+	}
 	var degrees = 180 + ( 180*rad/Math.PI );
 	return degrees.toFixed(1); 
 }
