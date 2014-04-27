@@ -17,9 +17,11 @@ function getNearestUnknownVessel() {
 	var candidate = null;
 	for (var i in model.entities) {
 		
-		// Skip own vessel and vessels already in the list
+		// Skip own vessel and vessels already in the list, and do not take into account black holes, anomalies or mines
+		var type = model.entities[i].entityType;
 		if (i != model.playerShipID &&
-		    entities.indexOf(i) === -1) {
+		    entities.indexOf(i) === -1 &&
+		    (type==1 || type==4 || type==5 || type==14 ) ) {
 			var brgDst = posToBrgDst(
 				model.entities[model.playerShipID].posX, 
 				model.entities[model.playerShipID].posZ, 
@@ -101,6 +103,7 @@ function updateTable(){
 // 				rowID = tbody.rows.length;
 			} else {
 				// No more vessels to be added into the table
+// 				console.log('No candidates to be added');
 				rowID = tbody.rows.length;
 			}
 		} else if (table.offsetHeight > window.innerHeight){
@@ -182,5 +185,5 @@ function updateRow(rowID) {
 }
 
 
-window.setInterval(updateTable,250);
+window.setInterval(updateTable,100);
 

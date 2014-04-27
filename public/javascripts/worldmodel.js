@@ -103,7 +103,7 @@ function updateEntity(data, type){
 		model.entities[data.id].entityType = type;
 		model.fireEvents('newEntity', data);
 		
-// 		console.log('New contact: ', data.shipName);
+// 		console.log('New contact: ', data.id, type, data.shipName);
 	} else {
 		for (var key in data) {
 			/// TODO: Log to console if some unknown value changes, 
@@ -138,14 +138,49 @@ iface.on('stationUpdate', function (data) {
 	updateEntity(data, 5);
 });
 
+iface.on('mineUpdate', function (data) {
+	// Entity type 6 = Mine
+	updateEntity(data, 6);
+});
+
+iface.on('anomalyUpdate', function (data) {
+	// Entity type 7 = Anomaly
+	updateEntity(data, 7);
+});
+
+iface.on('nebulaUpdate', function (data) {
+	// Entity type 9 = Nebula
+	updateEntity(data, 9);
+});
+
+iface.on('torpedoUpdate', function (data) {
+	// Entity type 10 = Torpedo
+	updateEntity(data, 10);
+});
+
+iface.on('blackHoleUpdate', function (data) {
+	// Entity type 11 = Black Hole
+	updateEntity(data, 11);
+});
+
+iface.on('asteroidUpdate', function (data) {
+	// Entity type 12 = Asteroid
+	updateEntity(data, 12);
+});
+
+iface.on('monsterUpdate', function (data) {
+	// Entity type 14 = Monster
+	updateEntity(data, 14);
+});
+
 iface.on('beamFired', function (data) {
 	// Protocol doesn't cover beams, so let's arbitrarily set -1
 	updateEntity(data, -1);
 });
 
 iface.on('destroyObject', function (data) {
-	delete(model.entities[data.id]);
 	model.fireEvents('destroyEntity', data);
+	delete(model.entities[data.id]);
 });
 
 

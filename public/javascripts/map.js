@@ -27,6 +27,7 @@ function getStyle(type,isEnemy,name) {
 
 	var strokeColor = '#ffffff';
 	var fillColor   = '#c0c0c0';
+	var radius=5;
 	if (type==1) {
 		strokeColor = '#00ff00';
 		fillColor   = '#40c040';
@@ -39,17 +40,29 @@ function getStyle(type,isEnemy,name) {
 			fillColor   = '#40c0c0';
 		}
 	} else if (type==5) {
-		strokeColor = '#ffff00';
+		strokeColor = '#ffff00';	// Stations
 		fillColor   = '#c0c040';
 	} else if (type==6) {
-		strokeColor = '#ffffff';
+		strokeColor = '#ffffff';	// Mines
 		fillColor   = '#666666';
+		radius = 2;
+	} else if (type==9) {
+		strokeColor = [0xff,0x00,0xff,.05];	// Nebulae
+		fillColor   = [0xc0,0x40,0xc0,.2];
+		radius = 15;
+	} else if (type==11) {
+		strokeColor = '#404040';	// Black hole
+		fillColor   = '#000000';
+		radius = 15;
+	} else if (type==12) {
+		strokeColor = '#ffbf80';	// Asteroid
+		fillColor   = '#c06640';
 	}
 
 	if (name) {
 		return [new ol.style.Style({
 			image: new ol.style.Circle({
-				radius: 5,
+				radius: radius,
 				fill: new ol.style.Fill({color: fillColor}),
 				stroke: new ol.style.Stroke({color: strokeColor, width: 1})
 			}),
@@ -64,7 +77,7 @@ function getStyle(type,isEnemy,name) {
 	} else {
 		return [new ol.style.Style({
 			image: new ol.style.Circle({
-				radius: 5,
+				radius: radius,
 				fill: new ol.style.Fill({color: fillColor}),
 				stroke: new ol.style.Stroke({color: strokeColor, width: 1})
 			})
@@ -184,7 +197,12 @@ model.on('updateEntity', function(data){
 });
 
 model.on('destroyEntity', function(data){
-	console.log('Destroyed entity in world model: ', data);
+// 	console.log('Destroyed entity in world model: ', data);
+	try {
+		vectorSource.removeFeature(model.entities[data.id].ol3Feature);
+	} catch(e) {
+		console.warn('Tried to remove non-existing feature from map, ', data);
+	}
 });
 
 

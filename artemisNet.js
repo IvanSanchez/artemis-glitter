@@ -135,63 +135,65 @@ function onPacket(buffer) {
 	
 	var packetDef = null;
 	if (knownPackets.hasOwnProperty( header.type )) {
+		var packets = [];
+		var packetTypes = [];
+		var subtypeLength = 0;
+		var packetDef;
 		if (knownPackets[header.type].subpackets) {
-			var subtypeLength = knownPackets[header.type].subtypeLength;
+			subtypeLength = knownPackets[header.type].subtypeLength;
+		}
+		
+		// One packet may contain several subpackets, just concatenated.
+		while(data.pointer < header.packetLength)
+		{
 			if (subtypeLength == 1) {
 				header.subtype = data.readByte();
 			} else if (subtypeLength == 4) {
 				header.subtype = data.readLong();
 			}
-			if (knownSubPackets[header.type].hasOwnProperty(header.subtype)) {
-				packetDef = knownSubPackets[header.type][header.subtype];
+			if (!subtypeLength) {
+				packetDef = knownPackets[header.type];
 			}
-		} else {
-			packetDef = knownPackets[header.type];
+			if (subtypeLength) {
+				if (!header.subtype) {
+// 					console.log('End of subpackets');
+					break;
+				}
+				
+				if ( knownSubPackets[header.type].hasOwnProperty(header.subtype)) {
+					packetDef = knownSubPackets[header.type][header.subtype];
+				}
+			}
+
+			var packetType;
+			if (packetDef) {
+				packetType = packetDef.name;
+			} else {
+				console.error('Unknown packet!', header.type, header.subtype);
+			}
+
+					
+			// Unfortunately, there might be some bugs still present
+			//   with random crashes involving reading outside the
+			//   recv buffer, so let's wrap this into a try-catch...
+			try {
+				packetTypes.push(packetType);
+				packets.push(packetDef.unpack(data));
+			} catch(e) {
+				console.error('Aaaaiiieeeee, something went wrong while parsing a packet of type ' + packetType + '!');
+				console.error(e);
+				console.error(data);
+				break;
+			}
 		}
-	}
-	
-	if (packetDef !== null) {
-		var packet = {};
-		var packetType = packetDef.name;
-		// Unfortunately, there might be some bugs still present
-		//   with random crashes involving reading outside the
-		//   recv buffer, so let's wrap this into a try-catch...
-		try {
-			packet = packetDef.unpack(data);
-		} catch(e) {
-			console.error('Aaaaiiieeeee, something went wrong while parsing a packet of type ' + packetType + '!');
-			console.error(e);
-			console.error(data);
-		}
-		
-		// Show contents of packet, for debugging
-// 		if (packet)
-// 		{
-// 			if (packetType == 'unknownUpdate') {} // Ignore empty updates, at least for now
-// 		 
-// // 			else if (packetType == 'playerUpdate' && Object.keys(packet).length > 5) {
-// // 				console.log('Player packet: ', packetType, packet);
-// // 			}
-// // 			else if (packetType == 'npcUpdate' && Object.keys(packet).length > 6) {
-// // 				console.log('NPC packet: ', packetType, packet);
-// // 			}
-// // 			else if (packetType == 'playerUpdate') {} // ignore
-// // 			else if (packetType == 'npcUpdate') {} // ignore
-// 			else {
-// 				console.log('Known packet: ', packetType, packet);
-// 			}
-// 		}
 		
 		// Some packets, particularly the stationUpdate one,
 		//  may return more than one payload.
-		if (Array.isArray(packet)) {
-			for (i in packet) {
-				fireEvents(packetType, packet[i]);
-				fireEvents('packet', packet[i], packetType);
-			}
-		} else {
-			fireEvents(packetType, packet);
-			fireEvents('packet', packet, packetType);
+// 		if (Array.isArray(packet)) {
+		for (i in packets) {
+// 			console.log(packetTypes[i], packets[i]);
+			fireEvents(packetTypes[i], packets[i]);
+			fireEvents('packet', packets[i], packetTypes[i]);
 		}
 		
 	} else {

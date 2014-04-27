@@ -152,4 +152,4 @@ artemisNet.connect('10.0.1.7',false);
 
 
 // Once everything's ready, try open the default browser with the main page.
-opener('http://localhost:' + tcpPort);
+// opener('http://localhost:' + tcpPort);

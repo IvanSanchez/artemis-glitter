@@ -8,7 +8,7 @@ exports.subtype = null;
 exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
-	return {}
+	return {unknown: data.readLong()};
 }
 
 
