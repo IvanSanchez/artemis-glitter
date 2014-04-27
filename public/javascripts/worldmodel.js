@@ -173,6 +173,11 @@ iface.on('monsterUpdate', function (data) {
 	updateEntity(data, 14);
 });
 
+iface.on('whaleUpdate', function (data) {
+	// Entity type 15 = Space Whales
+	updateEntity(data, 15);
+});
+
 iface.on('beamFired', function (data) {
 	// Protocol doesn't cover beams, so let's arbitrarily set -1
 	updateEntity(data, -1);

@@ -18,7 +18,7 @@ exports.unpack = function(data) {
 	unpacked.id = data.readLong(0);
 	
 	var bits = data.readBitArray(4);
-
+	
 	// The bits are in big-endian, and the docs are in little-endian!
 	// This is why this seems backwards :-(
 	if (bits.get(7)) { unpacked.heatBeams     = data.readFloat();}

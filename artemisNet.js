@@ -183,6 +183,7 @@ function onPacket(buffer) {
 				console.error('Aaaaiiieeeee, something went wrong while parsing a packet of type ' + packetType + '!');
 				console.error(e);
 				console.error(data);
+				
 				break;
 			}
 		}

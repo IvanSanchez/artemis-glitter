@@ -16,18 +16,20 @@ exports.unpack = function(data) {
 // 	Values for playerShip are 1 to 8
 // 	Values for availability are: 0 = available, 1 = mine, 2 = unavailable
 	
-	return {
-		playerShip:     data.readLong(),
-		
-		mainScreen:     data.readByte(),
-		helm:           data.readByte(),
-		weapons:        data.readByte(),
-		engineering:    data.readByte(),
-		science:        data.readByte(),
-		communications: data.readByte(),
-		observer:       data.readByte(),
-		gameMaster:     data.readByte()
-	}
+	var unpacked = {};
+	
+	unpacked.playerShip    = data.readLong();
+	unpacked.mainScreen    = data.readByte();
+	unpacked.helm          = data.readByte();
+	unpacked.weapons       = data.readByte();
+	unpacked.engineering   = data.readByte();
+	unpacked.science       = data.readByte();
+	unpacked.communications= data.readByte();
+	unpacked.observer      = data.readByte();
+	unpacked.gameMaster    = data.readByte();
+	unpacked.unknown       = data.readByte();
+	
+	return unpacked;
 }
 
 

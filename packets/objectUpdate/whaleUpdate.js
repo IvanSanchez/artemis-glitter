@@ -14,14 +14,9 @@ exports.pack = null;	// Only from server to client
 exports.unpack = function(data) {
 	var unpacked = {};
 	
-	return unpacked;
-	
-	
 	unpacked.id = data.readLong(0);
 	
 	var bits = data.readBitArray(2);
-	
-	console.log(bits);
 	
 	// The bits are in big-endian, and the docs are in little-endian!
 	// This is why this seems backwards :-(

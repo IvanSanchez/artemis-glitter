@@ -15,8 +15,8 @@ var artemisBufferReader = function(buffer) {
 artemisBufferReader.prototype.readString = function() {
 	var strLen = this.buffer.readUInt32LE(this.pointer) * 2;
 	/// HACK: Node doesn't seem to handle little-endian UTF16 well enough on ARMel CPUs, so let's fall back to ASCII for the time being.
-// 	var str    = this.buffer.toString('utf16le', this.pointer+4, this.pointer + strLen + 2)
-	var str    = this.buffer.toString('ascii', this.pointer+4, this.pointer + strLen + 2)
+	var str    = this.buffer.toString('utf16le', this.pointer+4, this.pointer + strLen + 2)
+// 	var str    = this.buffer.toString('ascii', this.pointer+4, this.pointer + strLen + 2).replace('\00','');
 	var strEnd = this.buffer.readUInt16LE(this.pointer + strLen + 2);
 	if (strEnd !== 0) {
 		console.warn("String does not end with 0x0000!!");

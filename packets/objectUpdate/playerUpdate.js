@@ -14,11 +14,10 @@ exports.pack = null;	// Only from server to client
 exports.unpack = function(data) {
 	
 	var unpacked = {};
-	
 	unpacked.id = data.readLong(0);
-	
-	var bits = data.readBitArray(5);
 
+	var bits = data.readBitArray(5);
+	
 	// The bits are in big-endian, and the docs are in little-endian!
 	// This is why this seems backwards :-(
 	if (bits.get(7)) { unpacked.weaponsTarget = data.readLong(); }
@@ -62,12 +61,11 @@ exports.unpack = function(data) {
 	if (bits.get(38)) { unpacked.scanningTarget= data.readByte(); }
 	if (bits.get(37)) { unpacked.scanningProgress= data.readFloat();}  
 	if (bits.get(36)) { unpacked.reverse       = data.readByte(); }
-	if (bits.get(35)) { unpacked.unknown3      = data.readByte(); } // Updated every time the dive/rise control is changed.
+	if (bits.get(35)) { unpacked.unknown3      = data.readFloat(); } // Updated every time the dive/rise control is changed.
 	if (bits.get(34)) { unpacked.unknown4      = data.readByte(); }
 	if (bits.get(33)) { unpacked.unknown5      = data.readLong(); }
 	if (bits.get(32)) { /* Unused */ }
 	
-
 	return unpacked;
 }
 
