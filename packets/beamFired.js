@@ -30,7 +30,7 @@ exports.unpack = function(data) {
 		// Observed 4
 		unknown5: data.readLong(),
 		
-		// Observed 1
+		// Observed 1 and 4.
 		unknown6: data.readLong(),
 
 		source:   data.readLong(),
@@ -42,7 +42,6 @@ exports.unpack = function(data) {
 		
 		unknown10: data.readLong()
 	}
-
 }
 
 

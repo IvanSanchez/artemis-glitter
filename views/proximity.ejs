@@ -1,0 +1,17 @@
+<% include layout.ejs -%>
+<link rel='stylesheet' href='/stylesheets/proximity.css' />
+
+
+<div id='vesselname'></div>
+
+<table>
+<tr><th>DS  <td id='proximity-ds' ><th>HOS<td id='proximity-hos' >
+<tr><th>NEB <td id='proximity-neb'><th>MNE<td id='proximity-mine'>
+<tr><th>HZD <td id='proximity-hzd'><th>DRN<td id='proximity-drone'>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/angles.js"></script>
+<script src="/javascripts/prettyprint.js"></script>
+<script src="/javascripts/worldmodel.js"></script>
+<script src="/javascripts/proximity.js"></script>

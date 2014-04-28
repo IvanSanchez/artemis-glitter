@@ -3,7 +3,7 @@
 // FIXME: This doesn't seem to be sent on game start. Yeah, it is sent once
 //   when starting the game.
 // It is, however, sent whenever a player torp hits something (is deleted from
-//   the model) or when some enemy explodes (is deleted from the model)
+//   the model) or when some enemy explodes (is deleted from the model), or when the player vessel is hit.
 
 exports.name = 'gameRestart';
 

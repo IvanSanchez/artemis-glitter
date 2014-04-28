@@ -17,9 +17,9 @@ function checkProximity() {
 		5: Number.POSITIVE_INFINITY,	// Space Station
 		6: Number.POSITIVE_INFINITY,	// Mine
 		9: Number.POSITIVE_INFINITY,	// Nebula
-		10: Number.POSITIVE_INFINITY,	// Torpedo
 		11: Number.POSITIVE_INFINITY,	// Black Hole
-		12: Number.POSITIVE_INFINITY	// Asteroid
+		12: Number.POSITIVE_INFINITY,	// Asteroid
+		16: Number.POSITIVE_INFINITY	// Drone (enemy ordnance)
 	};
 	
 	for (var i in model.entities) {
@@ -60,7 +60,7 @@ function checkProximity() {
 	minDistances[4]  = distanceToKs(minDistances[4]);  // Hostile
 	minDistances[5]  = distanceToKs(minDistances[5]);  // Space Station
 	minDistances[6]  = distanceToKs(minDistances[6]);  // Mine
-	minDistances[10] = distanceToKs(minDistances[10]); // Torpedo
+	minDistances[16] = distanceToKs(minDistances[16]); // Drone (enemy ordnance)
 
 	// I *think* nebulae are 3KM wide, and the prox monitor will show "IN"
 	//   when inside a nebula. Distances are to the edge of nebulae.
@@ -74,7 +74,7 @@ function checkProximity() {
 	document.getElementById('proximity-hos').innerHTML  = minDistances[4];
 	document.getElementById('proximity-ds').innerHTML   = minDistances[5];
 	document.getElementById('proximity-mine').innerHTML = minDistances[6];
-	document.getElementById('proximity-torp').innerHTML = minDistances[10];
+	document.getElementById('proximity-drone').innerHTML = minDistances[16];
 	document.getElementById('proximity-neb').innerHTML  = minDistances[9];
 	
 	document.getElementById('proximity-hzd').innerHTML = hazardDistance;

@@ -26,13 +26,13 @@ Possible values for "priority":
 
 3:
 
-4:
+4: We're under attack
 
 5:
 
 6: We've produced another missile
 
-7:
+7: Help us help you
 
 8: Will you surrender?!
 

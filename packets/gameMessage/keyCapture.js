@@ -9,7 +9,7 @@ exports.subtypeLength = 4;	// 4 bytes -> UInt32LE
 exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
-	var capture = data.readLong();
+	var capture = data.readByte();
 	return {capture: capture};
 }
 

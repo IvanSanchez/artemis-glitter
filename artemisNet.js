@@ -178,12 +178,35 @@ function onPacket(buffer) {
 			//   recv buffer, so let's wrap this into a try-catch...
 			try {
 				packetTypes.push(packetType);
-				packets.push(packetDef.unpack(data));
+				var unpacked = packetDef.unpack(data);
+				packets.push(unpacked);
+				
+				// Debug: log non-entity-update packets
+// 				if (header.type != 0x80803df9 &&
+// 				    packetType != 'togglePause' &&
+// 				    packetType != 'intel' &&
+// 				    packetType != 'damcon' &&
+// 				    packetType != 'beamFired' &&
+// 				    packetType != 'consoleStatus' &&
+// 				    packetType != 'destroyObject') {
+// 					console.log(packetType, unpacked);
+// 				}
+// 				if (packetType == 'droneUpdate') {
+// 					console.log('drone update: ', unpacked);
+// 				}
+				
 			} catch(e) {
 				console.error('Aaaaiiieeeee, something went wrong while parsing a packet of type ' + packetType + '!');
-				console.error(e);
-				console.error(data);
-				
+				var str = '';
+				for (var i = 0; i<header.packetLength && i<data.buffer.length; i++) {
+					var hex = data.buffer.readUInt8(i).toString(16);
+					if (hex.length < 2) {
+						hex = "0" + hex;
+					}
+					str += hex + ' ';
+				}
+				console.log('Data was:');
+				console.log(str);
 				break;
 			}
 		}
@@ -197,6 +220,41 @@ function onPacket(buffer) {
 			fireEvents('packet', packets[i], packetTypes[i]);
 		}
 		
+		
+		// Packets with 1-byte subtype are packed to 4 bytes.
+		// This means the last 00 is really the last 00000000 and
+		//   we need to advance the pointer a little bit.
+		if (subtypeLength == 1) {
+			data.pointer+=3;
+		}
+		
+		// Code to debug unknown/weird/mishandled packets
+		if (data.pointer != header.packetLength) {
+			console.log('Mismatching read length and packet length: ', data.pointer, header.packetLength, ' , data size: ', data.buffer.length);
+			console.log('Last packet was: ', packets[packets.length-1]);
+			
+			var str = '';
+			for (var i = 0; i<data.pointer && i<data.buffer.length; i++) {
+				var hex = data.buffer.readUInt8(i).toString(16);
+				if (hex.length < 2) {
+					hex = "0" + hex;
+				}
+				str += hex + ' ';
+			}
+			console.log('Data was:');
+			console.log(str);
+			
+			var str = '';
+			for (var i = data.pointer; i<=header.packetLength && i<data.buffer.length; i++) {
+				var hex = data.buffer.readUInt8(i).toString(16);
+				if (hex.length < 2) {
+					hex = "0" + hex;
+				}
+				str += hex + ' ';
+			}
+			console.log('Data ahead is:');
+			console.log(str);
+		}
 	} else {
 		console.error('Unknown packet type: ', header.type.toString(16), ', subtype: ', header.subtype);
 		
@@ -210,11 +268,11 @@ function onPacket(buffer) {
 		fireEvents('packet', header);
 	}
 	
-
 	// Perhaps we still have some data in the same TCP packet, so let's use a bit of recursivity...
 	if (data.buffer.length > header.packetLength) {
 		onPacket( data.buffer.slice(header.packetLength) );
 	}
+
 }
 
 

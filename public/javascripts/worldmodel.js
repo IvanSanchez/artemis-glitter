@@ -22,8 +22,9 @@ var model = {
 	// Holds all known data for all known entities.
 	// The key of each one is the numeric ID of the entity.
 	entities: {},
-	comms: {},	/// FIXME
-	intel: {},	/// FIXME
+	comms: {},
+	incomingAudio: {},
+	intel: {},
 	
 	playerShipID: null,	// Tipically around 1010 or so.
 	playerShipIndex: null,	// From 0 to 7
@@ -31,6 +32,13 @@ var model = {
 	weapons: {id: null},	// Status of own weapons console
 	allShipSettings: [],	// Used only during pre-game during ship selection screen
 	gameStarted: false,
+	gamePaused: 0,	// 0 means playing, 1 means pausing, 2 means paused.
+	
+	damconNodes:{},
+	damconTeams:{},
+	
+	skybox: null,
+	difficulty: null,
 	
 	eventHandlers: {
 		newEntity: [],
@@ -90,7 +98,7 @@ iface.on('gameStart', function(){
 
 iface.on('gameRestart', function(){
 	model.gameStarted  = true;
-	console.log('Game restarted.');
+	console.log('Game (re)started.');
 });
 
 
@@ -178,9 +186,39 @@ iface.on('whaleUpdate', function (data) {
 	updateEntity(data, 15);
 });
 
+iface.on('droneUpdate', function (data) {
+	// Entity type 16 = Drones
+	updateEntity(data, 16);
+});
+
 iface.on('beamFired', function (data) {
 	// Protocol doesn't cover beams, so let's arbitrarily set -1
 	updateEntity(data, -1);
+});
+
+var unknownGameMessageCount = 1000000;
+iface.on('unknownGameMessage', function (data) {
+	// This weird packet seems to have coordinates for jumps, but dunno
+	//   what it means.
+	data.id = unknownGameMessageCount++;
+	data.shipName = 'AI Point';
+	updateEntity(data, -2);
+});
+
+var commsCounter = 0;
+iface.on('commsIncoming', function (data) {
+	model.comms[commsCounter] = data;
+	if (data.sender.indexOf('\u0000') !== -1) {
+		console.log('Malformed sender string in comms! :', data.sender);
+		data.sender = data.sender.split('\u0000')[0];
+	}
+	if (data.msg.indexOf('\u0000') !== -1) {
+		console.log('Malformed message string in comms! :', data.msg);
+		data.msg = data.msg.split('\u0000')[0];
+	}
+	
+	model.comms[commsCounter].timestampUpdated = (new Date()).getTime();
+	commsCounter++;
 });
 
 iface.on('destroyObject', function (data) {
@@ -197,17 +235,57 @@ iface.on('consoleStatus', function(data){
 // 	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
 });
 
-iface.on('destroyObject', function (data) {
-	delete(model.entities[data.id]);
-	model.fireEvents('destroyEntity', data);
-});
-
-
 iface.on('allShipSettings', function (data) {
 	model.allShipSettings = data;
 });
 
+iface.on('skybox', function (data) {
+	model.skybox = data.skyboxID;
+	model.gameStarted = true;
+});
 
+iface.on('intel', function (data) {
+	model.intel[data.id] = [data.unknown, data.msg];
+});
+
+iface.on('togglePause', function (data) {
+	model.gamePaused++;
+	if (model.gamePaused >= 3) model.gamePaused = 0;
+	// 0 = playing, 1 = pausing, 2 = paused
+});
+
+iface.on('difficulty', function (data) {
+	model.difficulty = data.difficulty;
+});
+
+
+iface.on('damcon', function (data) {
+	
+	for (var i in data.nodes) {
+		var node = data.nodes[i];
+		if (!model.damconNodes.hasOwnProperty(node.x)) {
+			model.damconNodes[node.x] = {};
+		}
+		if (!model.damconNodes[node.x].hasOwnProperty(node.y)) {
+			model.damconNodes[node.x][node.y] = {};
+		}
+		model.damconNodes[node.x][node.y][node.z] = node.damage;
+	}
+	
+	for (var i in data.teams) {
+		
+		model.damconTeams[data.teams[i].teamID] = data.teams[i];
+	}
+});
+
+iface.on('difficulty', function (data) {
+	var id = data.id;
+	if (!model.incomingAudio.hasOwnProperty(id)) {
+		model.incomingAudio[id] = data;
+	} else {
+		model.incomingAudio[id].mode = data.mode;
+	}
+});
 
 
 
@@ -221,8 +299,11 @@ iface.on('allShipSettings', function (data) {
 // I wonder why the coordinate system is X-Z based instead of X-Y based.
 // TODO: Add rate-of-turn to the mix.
 function extrapolatePosition(x,z,hdg,spd,timestamp) {
-	var now = (new Date()).getTime();
-	var diff = now - timestamp;	// In milliseconds
+	var diff = 0;
+	if (!model.gamePaused) {
+		var now = (new Date()).getTime();
+		diff = now - timestamp;	// In milliseconds
+	}
 	
 	// Based on my back-of-the-envelope calculations, a vessel
 	//   travelling at a velocity of 0.3 actually means about

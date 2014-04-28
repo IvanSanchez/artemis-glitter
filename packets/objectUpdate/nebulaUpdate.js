@@ -30,15 +30,11 @@ exports.unpack = function(data) {
 	if (bits.get(7)) { unpacked.posX           = data.readFloat();}
 	if (bits.get(6)) { unpacked.poxY           = data.readFloat();}
 	if (bits.get(5)) { unpacked.posZ           = data.readFloat();}
-	if (bits.get(4)) { unpacked.unknown1       = data.readFloat();}
-	if (bits.get(3)) { unpacked.unknown2       = data.readFloat();}
-	if (bits.get(2)) { unpacked.unknown3       = data.readFloat();}
+	if (bits.get(4)) { unpacked.colorRed       = data.readFloat();}
+	if (bits.get(3)) { unpacked.colorGreen     = data.readFloat();}
+	if (bits.get(2)) { unpacked.colorBlue      = data.readFloat();}
 	if (bits.get(1)) { /* unused */ }
 	if (bits.get(0)) { /* unused */ }
 	
-	unpacked.unknown4 = data.readLong();
-	
 	return unpacked;
 }
-
-

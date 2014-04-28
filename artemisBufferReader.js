@@ -78,6 +78,10 @@ artemisBufferReader.prototype.peekShort = function() {
 	return this.buffer.readUInt16LE(this.pointer);
 };
 
+artemisBufferReader.prototype.peekLong = function() {
+	return this.buffer.readUInt32LE(this.pointer);
+};
+
 
 
 

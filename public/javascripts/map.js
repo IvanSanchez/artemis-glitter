@@ -60,6 +60,17 @@ function getStyle(type,isEnemy,name) {
 	} else if (type==15) {
 		strokeColor = '#00ff80';	// Space Whales
 		fillColor   = '#40c080';
+	} else if (type==16) {
+		strokeColor = '#ffffff';	// Drone
+		fillColor   = '#666666';
+	} else if (type==-1) {
+		strokeColor = '#ffffff';	// Beam
+		fillColor   = '#666666';
+		radius = 1;
+	} else if (type==-2) {
+		strokeColor = '#ffffff';	// unknownGameMessage
+		fillColor   = '#ffffff';
+		radius = 2;
 	}
 
 	if (name) {
@@ -121,7 +132,11 @@ var vectorLayer = new ol.layer.Vector({
 
 // Mouse position control
 var mousePositionControl = new ol.control.MousePosition({
-  coordinateFormat: ol.coordinate.createStringXY(0),
+  coordinateFormat: function(ll){ 
+    var x = 100000 - ll[0];
+    var y = 100000 - ll[1];
+    return x.toFixed(0) + ', ' + y.toFixed(0);
+  },
   projection: artemisProjection,
   // comment the following two lines to have the mouse position
   // be placed within the map.
@@ -172,7 +187,7 @@ function addOrUpdateMapEntity(data) {
 	var geom = new ol.geom.Point([100000 - data.posX, 100000 - data.posZ]);
 // 	var geom = new ol.geom.Point([data.posX, data.posZ]);
 	
-	var entity = model.entities[id]
+	var entity = model.entities[id];
 	
 	if (!entity.hasOwnProperty('ol3Feature')) {
 		/// FIXME: Add HDG, surrender status.
@@ -191,13 +206,9 @@ function addOrUpdateMapEntity(data) {
 	}
 }
 
-model.on('newEntity', function(data){
-	addOrUpdateMapEntity(data);
-});
+model.on('newEntity', addOrUpdateMapEntity);
 
-model.on('updateEntity', function(data){
-	addOrUpdateMapEntity(data);
-});
+model.on('updateEntity', addOrUpdateMapEntity);
 
 model.on('destroyEntity', function(data){
 // 	console.log('Destroyed entity in world model: ', data);
@@ -222,13 +233,21 @@ function clearData() {
 	document.getElementById('vesselData').innerHTML = '';
 }
 
+function isFloat(n) {
+    return n === +n && n !== (n|0);
+}
+
 function showData(id) {
 	var str = '';
 	
 	for (key in model.entities[id]) {
 		var val = model.entities[id][key];
-		str += '<tr><td>' + key
-		str += '<td>' + val
+		str += '<tr><td>' + key;
+		if (isFloat(val)) {
+			str += '<td>' + val.toPrecision(10);
+		} else {
+			str += '<td style="text-overflow:ellipsis; white-space:no-break">' + val;
+		}
 	}
 	
 	document.getElementById('vesselData').innerHTML = '<table>' + str + '</table>';

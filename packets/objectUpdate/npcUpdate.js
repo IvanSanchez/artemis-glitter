@@ -42,8 +42,8 @@ exports.unpack = function(data) {
 	if (bits.get(22)) { unpacked.forShieldsMax  = data.readFloat();}
 	if (bits.get(21)) { unpacked.aftShields     = data.readFloat();}
 	if (bits.get(20)) { unpacked.aftShieldsMax  = data.readFloat();}
-	if (bits.get(19)) { unpacked.unknown5       = data.readShort();}
-	if (bits.get(18)) { unpacked.unknown6       = data.readByte(); }
+	if (bits.get(19)) { unpacked.unknown5       = data.readShort();} // Maybe ShieldsOn
+	if (bits.get(18)) { unpacked.unknown6       = data.readByte(); } // Maybe triggersMines
 	if (bits.get(17)) { unpacked.eliteBits      = data.readLong(); }
 	if (bits.get(16)) { unpacked.eliteBitsActive= data.readLong();}  
 	
