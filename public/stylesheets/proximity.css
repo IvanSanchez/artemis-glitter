@@ -31,3 +31,16 @@ table th {
 	text-align: right;
 	color: white;
 }
+
+
+div#status {
+	
+	margin-top: 5vh;
+	margin-bottom: 5vh;
+	
+	font-size: 10vw;
+	line-height: 10vw;
+	min-height:20vw;
+	text-align:center;
+	
+}

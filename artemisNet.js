@@ -102,7 +102,7 @@ function onPacket(buffer) {
 	var data = new reader(buffer);
 	
 	if (buffer.length < 24) {
-		console.log('End of TCP datagram reached while parsing packet headers');
+// 		console.log('End of TCP datagram reached while parsing packet headers');
 		previousBuffer = buffer;
 		return;
 	}
@@ -128,7 +128,7 @@ function onPacket(buffer) {
 	}
 	
 	if (buffer.length < header.packetLength) {
-		console.log('End of TCP datagram before end of packet');
+// 		console.log('End of TCP datagram before end of packet');
 		previousBuffer = buffer;
 		return;
 	}

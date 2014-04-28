@@ -38,7 +38,6 @@ function getColor(entity) {
 		}
 	}
 	
-	
 	// Player vessel
 	if (entity.entityType==1) {
 		return '#40C040';

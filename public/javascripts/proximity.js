@@ -3,6 +3,7 @@
 // Mutex-like flag, for slow browsers.
 var checkingProximity = false;
 
+var insideNebula = false;
 
 function checkProximity() {
 
@@ -70,15 +71,65 @@ function checkProximity() {
 		minDistances[9] = 'IN';
 	}
 	
+	var status = null;
+	if (minDistances[9] == 'IN') {
+		status = 'nebula';
+		if (!insideNebula) {
+			/// TODO: Trigger "Entering Nebula" sound
+		}
+	} else {
+		if (insideNebula) {
+			/// TODO: Trigger "Exiting Nebula" sound
+		}
+	}
+	
+	if (hazardDistance < 2000) {
+		status = 'hazard';
+		/// TODO: Trigger "navigational hazard" sound
+	}
+	
+	if (minDistances[4] < 2000) {
+		status = 'enemy';
+		/// TODO: Trigger "nearby hostile" sound
+	}
+	
+	if (minDistances[6] < 2000) {
+		status = 'mine';
+		/// TODO: Trigger "proximity warning" sound
+	}
+	
+	if (minDistances[16] < 2000) {
+		status = 'drone';
+		/// TODO: Trigger "incoming ordnance" sound
+	}
 	
 	document.getElementById('proximity-hos').innerHTML  = minDistances[4];
 	document.getElementById('proximity-ds').innerHTML   = minDistances[5];
 	document.getElementById('proximity-mine').innerHTML = minDistances[6];
 	document.getElementById('proximity-drone').innerHTML = minDistances[16];
 	document.getElementById('proximity-neb').innerHTML  = minDistances[9];
-	
 	document.getElementById('proximity-hzd').innerHTML = hazardDistance;
 	
+	var statusDiv = document.getElementById('status');
+	if (status === null) {
+		var ownVesselName = 'Artemis';
+		try {
+			ownVesselName = model.allShipSettings[model.playerShipIndex].name;
+		} catch(e) {};
+		statusDiv.innerHTML = '<span style="color:#40C040">' + ownVesselName + '</span>';
+	} else if (status == 'hazard') {
+		statusDiv.innerHTML = '<span style="color:#C04040">Navigational<br>Hazard</span>';
+	} else if (status == 'enemy') {
+		statusDiv.innerHTML = '<span style="color:#C04040">Nearby<br>Hostile</span>';
+	} else if (status == 'mine') {
+		statusDiv.innerHTML = '<span style="color:#C04040">Proximity<br>Warning</span>';
+	} else if (status == 'drone') {
+		statusDiv.innerHTML = '<span style="color:#C04040">Incoming<br>Ordnance</span>';
+	} else if (status == 'nebula') {
+		statusDiv.innerHTML = '<span style="color:#c040c0">Inside<br>Nebula</span>';
+// 		statusDiv.innerHTML = '<span style="color:#C04040">Navigational Hazard</span>';
+
+	}
 	
 	/// TODO: Set the colours based on some thresholds.
 	/// TODO: Set monsters as hostile??

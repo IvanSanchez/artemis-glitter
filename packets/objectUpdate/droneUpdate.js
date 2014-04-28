@@ -26,7 +26,7 @@ exports.unpack = function(data) {
 	
 	// The bits are in big-endian, and the docs are in little-endian!
 	// This is why this seems backwards :-(
-	if (bits.get(7)) { unpacked.unknown1       = data.readLong(); }
+	if (bits.get(7)) { unpacked.damage         = data.readLong(); }
 	if (bits.get(6)) { unpacked.posX           = data.readFloat();}
 	if (bits.get(5)) { unpacked.unknown2       = data.readFloat();}
 	if (bits.get(4)) { unpacked.posZ           = data.readFloat();}

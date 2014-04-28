@@ -201,7 +201,7 @@ iface.on('unknownGameMessage', function (data) {
 	// This weird packet seems to have coordinates for jumps, but dunno
 	//   what it means.
 	data.id = unknownGameMessageCount++;
-	data.shipName = 'AI Point';
+	data.shipName = 'Cloak';
 	updateEntity(data, -2);
 });
 
