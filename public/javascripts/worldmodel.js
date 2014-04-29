@@ -19,6 +19,9 @@ catch(e) {
 // Holds all known data for all known entities.
 // The key of each one is the numeric ID of the entity.
 var model = {
+	connected: false,
+	serverVersion: null,
+	
 	// Holds all known data for all known entities.
 	// The key of each one is the numeric ID of the entity.
 	entities: {},
@@ -33,6 +36,7 @@ var model = {
 	allShipSettings: [],	// Used only during pre-game during ship selection screen
 	gameStarted: false,
 	gamePaused: 0,	// 0 means playing, 1 means pausing, 2 means paused.
+
 	
 	damconNodes:{},
 	damconTeams:{},
@@ -75,6 +79,19 @@ function off(eventType, fn) {
 		delete(model.eventHandlers[eventType][i]);
 	}
 }
+
+
+iface.on('connected', function(){
+	model.connected = true;
+});
+
+iface.on('disconnected', function(){
+	model.connected = false;
+});
+
+iface.on('version', function(data){
+	model.serverVersion = data.version;
+});
 
 
 iface.on('gameOver', function(){
@@ -196,8 +213,8 @@ iface.on('beamFired', function (data) {
 	updateEntity(data, -1);
 });
 
-var unknownGameMessageCount = 1000000;
-iface.on('unknownGameMessage', function (data) {
+var cloakingFlashCount = 1000000;
+iface.on('cloakFlash', function (data) {
 	// This weird packet seems to have coordinates for jumps, but dunno
 	//   what it means.
 	data.id = unknownGameMessageCount++;

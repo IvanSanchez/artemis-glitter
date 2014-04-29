@@ -68,7 +68,7 @@ function getStyle(type,isEnemy,name) {
 		fillColor   = '#666666';
 		radius = 1;
 	} else if (type==-2) {
-		strokeColor = '#ffffff';	// unknownGameMessage
+		strokeColor = '#ffffff';	// cloakingFlash
 		fillColor   = '#ffffff';
 		radius = 2;
 	}

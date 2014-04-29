@@ -42,8 +42,6 @@ iface.on('disconnected', function(){
 	document.getElementById('vessel-select').style.display = 'none';
 });
 
-
-
 // Check if Glitter is already connected to Artemis on webpage start-up
 function receiveArtemisServerAddr() {
 	if (this.responseText != "") {
@@ -52,6 +50,13 @@ function receiveArtemisServerAddr() {
 		document.getElementById('connect'   ).style.display = 'none';
 		document.getElementById('connecting').style.display = 'none';
 		document.getElementById('disconnect').style.display = 'inline';
+		document.getElementById('vessel-select').style.display = 'inline';
+	} else {
+		document.getElementById('connect'   ).style.display = 'inline';
+		document.getElementById('connecting').style.display = 'none';
+		document.getElementById('disconnect').style.display = 'none';
+		document.getElementById('serveraddr').disabled = false;
+		document.getElementById('vessel-select').style.display = 'none';
 	}
 }
 var oReq = new XMLHttpRequest();
@@ -118,4 +123,5 @@ document.getElementById('playershipname').addEventListener('change',function(e){
 	oReq.open("get", "./ship-select/" + shipIndex, true);
 	oReq.send();
 });
+
 

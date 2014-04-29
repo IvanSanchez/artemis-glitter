@@ -4,6 +4,7 @@
 var checkingProximity = false;
 
 var insideNebula = false;
+var lastStatus = 'initial';
 
 function checkProximity() {
 
@@ -110,27 +111,27 @@ function checkProximity() {
 	document.getElementById('proximity-neb').innerHTML  = minDistances[9];
 	document.getElementById('proximity-hzd').innerHTML = hazardDistance;
 	
-	var statusDiv = document.getElementById('status');
-	if (status === null) {
-		var ownVesselName = 'Artemis';
-		try {
-			ownVesselName = model.allShipSettings[model.playerShipIndex].name;
-		} catch(e) {};
-		statusDiv.innerHTML = '<span style="color:#40C040">' + ownVesselName + '</span>';
-	} else if (status == 'hazard') {
-		statusDiv.innerHTML = '<span style="color:#C04040">Navigational<br>Hazard</span>';
-	} else if (status == 'enemy') {
-		statusDiv.innerHTML = '<span style="color:#C04040">Nearby<br>Hostile</span>';
-	} else if (status == 'mine') {
-		statusDiv.innerHTML = '<span style="color:#C04040">Proximity<br>Warning</span>';
-	} else if (status == 'drone') {
-		statusDiv.innerHTML = '<span style="color:#C04040">Incoming<br>Ordnance</span>';
-	} else if (status == 'nebula') {
-		statusDiv.innerHTML = '<span style="color:#c040c0">Inside<br>Nebula</span>';
-// 		statusDiv.innerHTML = '<span style="color:#C04040">Navigational Hazard</span>';
-
+	if (lastStatus !== status) {
+		var statusDiv = document.getElementById('status');
+		if (status == 'hazard') {
+			statusDiv.innerHTML = '<span  class="red">NAVIGATIONAL<br>HAZARD</span>';
+		} else if (status == 'enemy') {
+			statusDiv.innerHTML = '<span class="red">NEARBY<br>HOSTILE</span>';
+		} else if (status == 'mine') {
+			statusDiv.innerHTML = '<span class="alert">PROXIMITY<br>WARNING</span>';
+		} else if (status == 'drone') {
+			statusDiv.innerHTML = '<span class="alert">INCOMING<br>ORDNANCE</span>';
+		} else if (status == 'nebula') {
+			statusDiv.innerHTML = '<span class="purple">Inside<br>Nebula</span>';
+		} else {
+			var ownVesselName = 'Offline';
+			try {
+				ownVesselName = model.allShipSettings[model.playerShipIndex].name;
+			} catch(e) {};
+			statusDiv.innerHTML = '<span class="green">' + ownVesselName + '</span>';
+		} 
+		lastStatus = status;
 	}
-	
 	/// TODO: Set the colours based on some thresholds.
 	/// TODO: Set monsters as hostile??
 	

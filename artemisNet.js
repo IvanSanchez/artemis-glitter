@@ -182,18 +182,15 @@ function onPacket(buffer) {
 				packets.push(unpacked);
 				
 				// Debug: log non-entity-update packets
-// 				if (header.type != 0x80803df9 &&
-// 				    packetType != 'togglePause' &&
-// 				    packetType != 'intel' &&
-// 				    packetType != 'damcon' &&
-// 				    packetType != 'beamFired' &&
-// 				    packetType != 'consoleStatus' &&
-// 				    packetType != 'destroyObject') {
-// 					console.log(packetType, unpacked);
-// 				}
-// 				if (packetType == 'droneUpdate') {
-// 					console.log('drone update: ', unpacked);
-// 				}
+				if (header.type != 0x80803df9 &&
+				    packetType != 'togglePause' &&
+				    packetType != 'intel' &&
+				    packetType != 'damcon' &&
+				    packetType != 'beamFired' &&
+				    packetType != 'consoleStatus' &&
+				    packetType != 'destroyObject') {
+					console.log(packetType, unpacked);
+				}
 				
 			} catch(e) {
 				console.error('Aaaaiiieeeee, something went wrong while parsing a packet of type ' + packetType + '!');

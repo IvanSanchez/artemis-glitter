@@ -1,25 +1,17 @@
-body {
-	margin:0; padding:0;
-}
-
 
 table {
+	width:100%;
 	width: 99vw;
-	max-height:100vw;
+	max-height:60%;
+	max-height:60vw;
 	margin: 0.5vw;
 	table-layout:fixed;
 }
 
 
 table td, table th {
-	margin: 0 1ex;
 	width: 25%;
-/* 	max-width: 20%; */
 	font-size: 5.75vw;
-	overflow: hidden;
-	text-overflow: "-";
-	
-/* 	border: 1px solid cyan; */
 }
 
 table td {
@@ -32,15 +24,22 @@ table th {
 	color: white;
 }
 
-
 div#status {
 	
+	margin-top: 25px;
 	margin-top: 5vh;
+	margin-bottom: 25px;
 	margin-bottom: 5vh;
 	
+	font-size: 50px;
 	font-size: 10vw;
+	line-height: 50px;
 	line-height: 10vw;
+	min-height:100px;
 	min-height:20vw;
 	text-align:center;
-	
 }
+
+
+
+

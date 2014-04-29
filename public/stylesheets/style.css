@@ -14,10 +14,11 @@
 }
 
 body {
-  font: 14px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 50px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
   background:#000020;	/* Artemis' dark blue */
   color: white;
   overflow: hidden;
+  margin:0; padding:0;
 }
 
 a {
@@ -26,4 +27,106 @@ a {
 
 h1, h2 {
 	text-align: center;
+}
+
+table td {
+	color: #c0c0c0;
+}
+
+table th {
+	color: white;
+}
+
+table td, table th {
+	margin: 0 1ex;
+	overflow: hidden;
+	text-overflow: "-";
+}
+
+
+/* The connection status overlay. */
+#connected {
+	display:none;
+	position:fixed;
+	top:0;
+	bottom:0;
+	left:0;
+	right:0;
+	background: rgba(0,0,32,0.9);
+	font-size: 5vh;
+	padding:5%;
+}
+
+#connected #gameOverTitle {
+	text-align: center;
+}
+
+#connected #gameOverReason {
+	text-align: center;
+	font-size: 3vh;
+}
+
+table#gameOverStats td ,
+table#gameOverStats th {
+	font-size: 3vh;
+	width: inherit;
+	padding: 0 1em;
+	text-align: right;
+}
+table#gameOverStats {
+	width:auto;
+}
+
+/* "Alert" text blinks in two shades of red */
+.alert {
+	color: #C04040;
+	
+	animation-name: alert-blinker;
+	animation-duration: 1s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	
+	-webkit-animation-name: alert-blinker;
+	-webkit-animation-duration: 1s;
+	-webkit-animation-timing-function: linear;
+	-webkit-animation-iteration-count: infinite;
+	
+	-moz-animation-name: alert-blinker;
+	-moz-animation-duration: 1s;
+	-moz-animation-timing-function: linear;
+	-moz-animation-iteration-count: infinite;
+}
+
+@-moz-keyframes alert-blinker {  
+	  0% { color: #C04040; }
+	 50% { color: #FF0000; }
+	100% { color: #C04040; }
+}
+
+@-webkit-keyframes alert-blinker {  
+	  0% { color: #C04040; }
+	 50% { color: #FF0000; }
+	100% { color: #C04040; }
+}
+
+@keyframes alert-blinker {  
+	  0% { color: #C04040; }
+	 50% { color: #FF0000; }
+	100% { color: #C04040; }
+}
+
+
+
+
+/* Common colors for text elements */
+.red {
+	color: #c04040;
+}
+
+.purple {
+	color: #c040c0;
+}
+
+.green {
+	color: #40c040;
 }

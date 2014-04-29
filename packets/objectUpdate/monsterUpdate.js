@@ -14,7 +14,7 @@ exports.pack = null;	// Only from server to client
 exports.unpack = function(data) {
 	var unpacked = {};
 	
-	unpacked.id = data.readLong(0);
+	unpacked.id = data.readLong();
 	
 	var bits = data.readBitArray(1);
 	
