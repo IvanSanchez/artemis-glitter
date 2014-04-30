@@ -14,7 +14,7 @@
 }
 
 body {
-  font: 50px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 25px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
   background:#000020;	/* Artemis' dark blue */
   color: white;
   overflow: hidden;
@@ -55,6 +55,8 @@ table td, table th {
 	background: rgba(0,0,32,0.9);
 	font-size: 5vh;
 	padding:5%;
+	
+	z-index:100000;
 }
 
 #connected #gameOverTitle {

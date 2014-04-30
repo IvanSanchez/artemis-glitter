@@ -2,19 +2,6 @@
 // Implements a persistent world model on top of the low-level network
 //   interface.
 
-var iface;
-var onBrowser = true;
-
-try {
-	// Running on browser, "io" is defined
-	iface = io.connect();
-}
-catch(e) {
-	// Runnint on node.js
-	iface = require('../../artemisNet');
-	onBrowser = false;
-}
-
 
 // Holds all known data for all known entities.
 // The key of each one is the numeric ID of the entity.
@@ -48,9 +35,26 @@ var model = {
 		newEntity: [],
 		updateEntity: [],
 		destroyEntity: [],
-		newOrUpdateEntity: []
+		newOrUpdateEntity: [],
+		glitterDisconnect: []
 	}
 };
+
+
+// Attach an event listener
+model.on = function(eventType, fn) {
+	model.eventHandlers[eventType].push(fn);
+}
+
+// Detach an event listener
+model.off = function(eventType, fn) {
+	var i = model.eventHandlers[eventType].indexOf(fn);
+	if (i != -1) {
+		delete(model.eventHandlers[eventType][i]);
+	}
+}
+
+
 
 // Most events are really socket.io messages, but for a simpler
 //   behaviour of the map, we'll wrap up some update functions and
@@ -67,18 +71,27 @@ model.fireEvents = function (eventType, data) {
 	}
 }
 
-// Attach an event listener
-model.on = function(eventType, fn) {
-	model.eventHandlers[eventType].push(fn);
+
+
+var iface;
+var onBrowser = true;
+
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	// Runnint on node.js
+	iface = require('../../artemisNet');
+	onBrowser = false;
+} else {
+	iface = io.connect();
+	iface.on('connect', function(){
+		console.log('Connected to Glitter server socket.io');
+		iface.on('disconnect', function(){
+			console.log('Disconnected from Glitter server socket.io');
+			model.fireEvents('glitterDisconnect');
+		});
+	});
 }
 
-// Detach an event listener
-function off(eventType, fn) {
-	var i = model.eventHandlers[eventType].indexOf(fn);
-	if (i != -1) {
-		delete(model.eventHandlers[eventType][i]);
-	}
-}
 
 
 iface.on('connected', function(){
@@ -92,7 +105,6 @@ iface.on('disconnected', function(){
 iface.on('version', function(data){
 	model.serverVersion = data.version;
 });
-
 
 iface.on('gameOver', function(){
 	/// TODO: Decide whether to call the destroyEntity event,
@@ -217,7 +229,7 @@ var cloakingFlashCount = 1000000;
 iface.on('cloakFlash', function (data) {
 	// This weird packet seems to have coordinates for jumps, but dunno
 	//   what it means.
-	data.id = unknownGameMessageCount++;
+	data.id = cloakingFlashCount++;
 	data.shipName = 'Cloak';
 	updateEntity(data, -2);
 });
@@ -376,14 +388,12 @@ if (onBrowser) {
 	oReq.open("get", "./model", true);
 	oReq.send();
 	
-	
-	
-	
+
 	// Automatically extrapolate vessel positions, for vessels
 	//   with a non-zero speed which haven't moved for the 
 	//   last 10 seconds.
 	/// FIXME: This doesn't take into account pausing the server!!!
-	var extrapolationTime = 1500;
+	var extrapolationTime = 10000;
 	setInterval(function(){
 		
 		var now = (new Date()).getTime();
@@ -411,8 +421,6 @@ if (onBrowser) {
 		
 	}, extrapolationTime);
 		
-	
-	
 } else {
 	// Runnint on node.js
 	exports.model = model;

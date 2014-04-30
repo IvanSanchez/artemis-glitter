@@ -28,6 +28,13 @@ function hideConnectedOverlay(){
 	document.getElementById('connected').style.display='none';
 }
 
+function onGlitterDisconnect(){
+	document.getElementById('connected').innerHTML =
+	 '<p class="alert">Connection to Glitter aborted.</p>' +
+	 '<p>Please check the network connectivity and the Glitter server, then reload this page.</p>';
+	document.getElementById('connected').style.display='block';
+}
+
 function onGameOverReason(data) {
 	document.getElementById('connected').style.display='block';
 	document.getElementById('connected').innerHTML =
@@ -37,7 +44,6 @@ function onGameOverReason(data) {
 	
 	document.getElementById('gameOverTitle').innerHTML = data.title;
 	document.getElementById('gameOverReason').innerHTML = data.reason;
-
 }
 
 function showStatistics(data) {
@@ -66,6 +72,8 @@ iface.on('gameOverReason',  onGameOverReason);
 iface.on('gameOverStats',   showStatistics);
 iface.on('gameOver',        checkConnected);
 
+model.on('glitterDisconnect',onGlitterDisconnect);
+
 // Check if Glitter is already connected to Artemis on webpage start-up
 function receiveArtemisServerAddr() {
 	if (this.responseText != "") {
@@ -80,7 +88,6 @@ var oReq = new XMLHttpRequest();
 oReq.onload = receiveArtemisServerAddr;
 oReq.open("get", "./artemis-server", true);
 oReq.send();
-
 
 
 // Enable the overlay used on every other console to show the connection status

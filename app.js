@@ -104,7 +104,7 @@ artemisNet.on('welcome', function(){
 //   'localhost', which is used in the internal web browser).
 var artemisServerAddr = null;
 app.get('/connect/:server', function(req,res){
-	artemisNet.connect(req.params.server, true);
+	artemisNet.connect(req.params.server, 10);
 	artemisServerAddr = req.params.server;
 	res.end();
 });
@@ -150,7 +150,7 @@ app.get('/ship-select/:shipIndex', function(req,res){
 
 // We'll try connecting once to localhost, anyway.
 // artemisNet.connect('localhost',false);
-// artemisNet.connect('10.0.1.7',false);
+// artemisNet.connect('10.0.1.7',5);
 
 
 // Once everything's ready, try open the default browser with the main page.
