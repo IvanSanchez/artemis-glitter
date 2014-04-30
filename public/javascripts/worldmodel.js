@@ -127,7 +127,7 @@ iface.on('gameStart', function(){
 
 iface.on('gameRestart', function(){
 	model.gameStarted  = true;
-	console.log('Game (re)started.');
+// 	console.log('Game (re)started.');
 });
 
 

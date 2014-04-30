@@ -29,6 +29,11 @@ function checkProximity() {
 		// Skip own vessel and vessels already in the list, and do not take into account black holes, anomalies or mines
 		var type = model.entities[i].entityType;
 		
+		// Just in case we're doing this too soon
+		if (!model.entities.hasOwnProperty(model.playerShipID)) {
+			return;
+		}
+		
 		if (minDistances.hasOwnProperty(type)) {
 		
 			var brgDst = posToBrgDst(
@@ -57,12 +62,6 @@ function checkProximity() {
 // 	console.log(minDistances);
 	
 	var hazardDistance = Math.min(minDistances[11],minDistances[12]);
-	hazardDistance = distanceToKs(hazardDistance);
-
-	minDistances[4]  = distanceToKs(minDistances[4]);  // Hostile
-	minDistances[5]  = distanceToKs(minDistances[5]);  // Space Station
-	minDistances[6]  = distanceToKs(minDistances[6]);  // Mine
-	minDistances[16] = distanceToKs(minDistances[16]); // Drone (enemy ordnance)
 
 	// I *think* nebulae are 3KM wide, and the prox monitor will show "IN"
 	//   when inside a nebula. Distances are to the edge of nebulae.
@@ -76,7 +75,6 @@ function checkProximity() {
 	if (minDistances[9] == 'IN') {
 		status = 'nebula';
 		if (!insideNebula) {
-			/// TODO: Trigger "Entering Nebula" sound
 		}
 	} else {
 		if (insideNebula) {
@@ -84,25 +82,27 @@ function checkProximity() {
 		}
 	}
 	
-	if (hazardDistance < 2000) {
+	if (hazardDistance < 1500) {
 		status = 'hazard';
-		/// TODO: Trigger "navigational hazard" sound
 	}
 	
 	if (minDistances[4] < 2000) {
 		status = 'enemy';
-		/// TODO: Trigger "nearby hostile" sound
 	}
 	
-	if (minDistances[6] < 2000) {
+	if (minDistances[6] < 1200) {
 		status = 'mine';
-		/// TODO: Trigger "proximity warning" sound
 	}
 	
 	if (minDistances[16] < 2000) {
 		status = 'drone';
-		/// TODO: Trigger "incoming ordnance" sound
 	}
+	
+	hazardDistance = distanceToKs(hazardDistance);
+	minDistances[4]  = distanceToKs(minDistances[4]);  // Hostile
+	minDistances[5]  = distanceToKs(minDistances[5]);  // Space Station
+	minDistances[6]  = distanceToKs(minDistances[6]);  // Mine
+	minDistances[16] = distanceToKs(minDistances[16]); // Drone (enemy ordnance)
 	
 	document.getElementById('proximity-hos').innerHTML  = minDistances[4];
 	document.getElementById('proximity-ds').innerHTML   = minDistances[5];
@@ -112,13 +112,22 @@ function checkProximity() {
 	document.getElementById('proximity-hzd').innerHTML = hazardDistance;
 	
 	if (lastStatus !== status) {
+	
+		if(lastStatus && lastStatus!='initial') {
+			document.getElementById('audio-'+lastStatus).pause();
+			document.getElementById('audio-'+lastStatus).currentTime = 0;
+		}
+		if(status) {
+			document.getElementById('audio-'+status).play();
+		}
+	
 		var statusDiv = document.getElementById('status');
 		if (status == 'hazard') {
 			statusDiv.innerHTML = '<span  class="red">NAVIGATIONAL<br>HAZARD</span>';
 		} else if (status == 'enemy') {
 			statusDiv.innerHTML = '<span class="red">NEARBY<br>HOSTILE</span>';
 		} else if (status == 'mine') {
-			statusDiv.innerHTML = '<span class="alert">PROXIMITY<br>WARNING</span>';
+			statusDiv.innerHTML = '<span class="alert">PROXIMITY<br>ALERT</span>';
 		} else if (status == 'drone') {
 			statusDiv.innerHTML = '<span class="alert">INCOMING<br>ORDNANCE</span>';
 		} else if (status == 'nebula') {
@@ -127,7 +136,9 @@ function checkProximity() {
 			var ownVesselName = 'Offline';
 			try {
 				ownVesselName = model.allShipSettings[model.playerShipIndex].name;
-			} catch(e) {};
+			} catch(e) {
+				status = 'initial'; // Will force recalculating the vessel name.
+			};
 			statusDiv.innerHTML = '<span class="green">' + ownVesselName + '</span>';
 		} 
 		lastStatus = status;
