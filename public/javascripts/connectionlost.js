@@ -8,19 +8,26 @@ function checkConnected() {
 	if (model.connected && model.allShipSettings) {
 		// We might not know the name of our vessel yet...
 		var vesselName;
+		var startedMessage;
 		if (!model.entities.hasOwnProperty(model.playerShipID)) {
-			vesselName = 'Offline.'
+			vesselName = 'Offline'
+			if (model.allShipSettings.hasOwnProperty(model.playerShipIndex)) {
+				vesselName = model.allShipSettings[model.playerShipIndex].name;
+			}
+			startedMessage = 'Simulation has not started yet.'
 			window.setTimeout(checkConnected,500);
 		} else {
-			vesselName = model.allShipSettings[model.playerShipIndex].name
+			vesselName = model.allShipSettings[model.playerShipIndex].name;
 			window.setTimeout(function(){
 				document.getElementById('connected').style.display='none';
-			},10000);
+			},1500);
+			startedMessage = 'Simulation started.'
 		}
 		
 		document.getElementById('connected').innerHTML =
 		 '<p>Glitter is connected to an Artemis server at IP: ' + serverIpAddr + ', server version ' + model.serverVersion + '</p>' +
-		 '<p>You\'re flying on the starship <span class="green shipname">' + vesselName + '</span></p>';
+		 '<p>You\'re flying on the starship <span class="green shipname">' + vesselName + '</span>.</p>' +
+		 '<p>' + startedMessage + '</p>';
 
 		document.getElementById('connected').style.display='block';
 	} else {

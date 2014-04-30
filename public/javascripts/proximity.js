@@ -59,8 +59,11 @@ function checkProximity() {
 		}
 	}
 	
-// 	console.log(minDistances);
+	// All status conditions are checked sequentially, and
+	//   the last to be checked will overwrite the previous
+	// Yes, yes, I should be using a chain of elseifs...
 	
+		
 	var hazardDistance = Math.min(minDistances[11],minDistances[12]);
 
 	// I *think* nebulae are 3KM wide, and the prox monitor will show "IN"
@@ -88,6 +91,10 @@ function checkProximity() {
 	
 	if (minDistances[4] < 2000) {
 		status = 'enemy';
+	}
+	
+	if (model.entities.hasOwnProperty(model.playerShipID) && model.entities[model.playerShipID].redAlert) {
+		status = 'redalert';
 	}
 	
 	if (minDistances[6] < 1200) {
@@ -128,6 +135,8 @@ function checkProximity() {
 			statusDiv.innerHTML = '<span class="red">NEARBY<br>HOSTILE</span>';
 		} else if (status == 'mine') {
 			statusDiv.innerHTML = '<span class="alert">PROXIMITY<br>ALERT</span>';
+		} else if (status == 'redalert') {
+			statusDiv.innerHTML = '<span class="alert">RED<br>ALERT</span>';
 		} else if (status == 'drone') {
 			statusDiv.innerHTML = '<span class="alert">INCOMING<br>ORDNANCE</span>';
 		} else if (status == 'nebula') {
@@ -150,5 +159,35 @@ function checkProximity() {
 }
 
 
-window.setInterval(checkProximity,100);
+var statusInterval = window.setInterval(checkProximity,100);
+
+
+iface.on('playerShipDamage', function() {
+	if (! (model.entities[model.playerShipID].shieldState)) {
+		var player = document.getElementById('audio-'+lastStatus)
+		if (player) {
+			player.pause();
+			player.currentTime = 0;
+		}
+		
+		var statusDiv = document.getElementById('status');
+		statusDiv.innerHTML = '<span class="alert">RAISE<br>SHIELDS</span>';
+		document.getElementById('audio-shields').play();
+		
+		// Do not play any other sounds until the "Shields up! Shields up!" has finished playing.
+		checkingProximity = true;
+		lastStatus = 'shields'
+		window.setTimeout(function(){
+			checkingProximity = false;
+		},2000);
+	}
+});
+
+
+// Pause a potentially looped sound on game end
+iface.on('gameOverReason',function(){
+	document.getElementById('audio-'+lastStatus).pause();
+	document.getElementById('audio-'+lastStatus).currentTime = 0;
+});
+
 

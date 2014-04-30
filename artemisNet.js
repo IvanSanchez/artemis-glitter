@@ -191,6 +191,9 @@ function onPacket(buffer) {
 				    packetType != 'damcon' &&
 				    packetType != 'beamFired' &&
 				    packetType != 'consoleStatus' &&
+				    packetType != 'gameRestart' &&
+				    packetType != 'soundEffect' &&
+				    packetType != 'playerShipDamage' &&
 				    packetType != 'destroyObject') {
 					console.log(packetType, unpacked);
 				}
