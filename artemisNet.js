@@ -234,7 +234,7 @@ function onPacket(buffer) {
 		// Code to debug unknown/weird/mishandled packets
 		if (data.pointer != header.packetLength) {
 			console.log('Mismatching read length and packet length: ', data.pointer, header.packetLength, ' , data size: ', data.buffer.length);
-			console.log('Last packet was: ', packets[packets.length-1]);
+			console.log('Last packet was: ', packetTypes[packets.length-1], packets[packets.length-1]);
 			
 			var str = '';
 			for (var i = 0; i<data.pointer && i<data.buffer.length; i++) {
