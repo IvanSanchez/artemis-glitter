@@ -3,7 +3,7 @@
 # Script to download the node-webkit binaries, zip everything, and make
 #   distributable files.
 
-glitter_version=0.1.0
+glitter_version=0.1.1
 
 
 # Cleanup previous build files
@@ -94,6 +94,7 @@ for i in {0..2}; do
 	zip -j artemis-glitter-${glitter_version}-$platform.zip \
 		${outputfile[$i]} \
 		node-webkit-v${nwversion}-${platform}/nw.pak \
+		node-webkit-v${nwversion}-${platform}/*.dll \
 		../README.md \
 		../LICENSE
 		

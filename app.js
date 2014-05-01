@@ -148,10 +148,29 @@ app.get('/ship-select/:shipIndex', function(req,res){
 	res.end();
 });
 
-// We'll try connecting once to localhost, anyway.
-// artemisNet.connect('localhost',false);
-// artemisNet.connect('10.0.1.7',5);
 
+
+
+process.argv.forEach(function (val, index, array) {
+	console.log(index + ': ' + val);
+});
+var headless = false;
+var autoConnect = false;
+
+for (var i in process.argv) {
+	if (process.argv[i] == '--headless') {
+		headless = true;
+	}
+	if (process.argv[i] == '--server' && process.argv.length > i+1) {
+		autoConnect = process.argv[i+1];
+	}
+}
+
+if (autoConnect) {
+	artemisNet.connect(autoConnect,5);
+}
 
 // Once everything's ready, try open the default browser with the main page.
-opener('http://localhost:' + tcpPort);
+if (!headless) {
+	opener('http://localhost:' + tcpPort);
+}
