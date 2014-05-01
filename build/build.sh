@@ -3,6 +3,13 @@
 # Script to download the node-webkit binaries, zip everything, and make
 #   distributable files.
 
+glitter_version=0.1.0
+
+
+# Cleanup previous build files
+rm artemis-glitter-*
+rm artemis-glitter.nw
+
 
 # Run 'npm install' and 'npm prune' to fix up dependencies
 cd ..
@@ -10,14 +17,12 @@ npm install
 npm prune
 cd build
 
-
 # Zip everything into a .nw file
 cd ..
 zip -r build/artemis-glitter.nw \
     *.js *.html *.json node_modules packets \
     public routes views LICENSE package.json README.md
 cd build
-
     
 # Definition of target platforms and peculiarities of each binary
 
@@ -84,6 +89,14 @@ for i in {0..2}; do
 	
 	cat node-webkit-v${nwversion}-${platform}/$runtime artemis-glitter.nw > ${outputfile[$i]}
 	chmod +x ${outputfile[$i]}
+	
+	echo "Compressing everything needed for a releaseable .zip"
+	zip -j artemis-glitter-${glitter_version}-$platform.zip \
+		${outputfile[$i]} \
+		node-webkit-v${nwversion}-${platform}/nw.pak \
+		../README.md \
+		../LICENSE
+		
 	
 done
 
