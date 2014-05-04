@@ -6,6 +6,16 @@ var checkingProximity = false;
 var insideNebula = false;
 var lastStatus = 'initial';
 
+var alarmEnabled = {
+	shl: true,
+	neb: true,
+	hzd: true,
+	hos: true,
+	mine: true,
+	drone: true
+};
+
+
 function checkProximity() {
 
 	if (checkingProximity) {
@@ -16,7 +26,7 @@ function checkProximity() {
 	
 	var minDistances = {
 		4: Number.POSITIVE_INFINITY,	// Hostile vessel
-		5: Number.POSITIVE_INFINITY,	// Space Station
+// 		5: Number.POSITIVE_INFINITY,	// Space Station
 		6: Number.POSITIVE_INFINITY,	// Mine
 		9: Number.POSITIVE_INFINITY,	// Nebula
 		11: Number.POSITIVE_INFINITY,	// Black Hole
@@ -75,7 +85,7 @@ function checkProximity() {
 	}
 	
 	var status = null;
-	if (minDistances[9] == 'IN') {
+	if (minDistances[9] == 'IN' && alarmEnabled.neb) {
 		status = 'nebula';
 		if (!insideNebula) {
 		}
@@ -85,11 +95,11 @@ function checkProximity() {
 		}
 	}
 	
-	if (hazardDistance < 1500) {
+	if (hazardDistance < 1500 && alarmEnabled.hzd) {
 		status = 'hazard';
 	}
 	
-	if (minDistances[4] < 2000) {
+	if (minDistances[4] < 2000 && alarmEnabled.hos) {
 		status = 'enemy';
 	}
 	
@@ -97,11 +107,11 @@ function checkProximity() {
 		status = 'redalert';
 	}
 	
-	if (minDistances[6] < 1200) {
+	if (minDistances[6] < 1200 && alarmEnabled.mine) {
 		status = 'mine';
 	}
 	
-	if (minDistances[16] < 2000) {
+	if (minDistances[16] < 2000 && alarmEnabled.drone) {
 		status = 'drone';
 	}
 	
@@ -112,7 +122,6 @@ function checkProximity() {
 	minDistances[16] = distanceToKs(minDistances[16]); // Drone (enemy ordnance)
 	
 	document.getElementById('proximity-hos').innerHTML  = minDistances[4];
-	document.getElementById('proximity-ds').innerHTML   = minDistances[5];
 	document.getElementById('proximity-mine').innerHTML = minDistances[6];
 	document.getElementById('proximity-drone').innerHTML = minDistances[16];
 	document.getElementById('proximity-neb').innerHTML  = minDistances[9];
@@ -161,9 +170,12 @@ function checkProximity() {
 
 var statusInterval = window.setInterval(checkProximity,100);
 
-
+// React on hit if shields are down.
+// The playerShipDamage packet is only sent to consoles of the vessel
+//   being hit.
 iface.on('playerShipDamage', function() {
-	if (! (model.entities[model.playerShipID].shieldState)) {
+	if (! (model.entities[model.playerShipID].shieldState) &&
+	    alarmEnabled.shl) {
 		var player = document.getElementById('audio-'+lastStatus)
 		if (player) {
 			player.pause();
@@ -184,10 +196,47 @@ iface.on('playerShipDamage', function() {
 });
 
 
+// Display shield status when it changes.
+iface.on('playerUpdate',function(data) {
+	
+	if (data.id == model.playerShipID
+	    && data.hasOwnProperty('shieldState')) {
+		
+		if (data.shieldState) {
+			document.getElementById('proximity-shl').innerHTML   = 'UP';
+		} else {
+			document.getElementById('proximity-shl').innerHTML   = 'DWN';
+		}
+	}
+	
+});
+
+
 // Pause a potentially looped sound on game end
 iface.on('gameOverReason',function(){
 	document.getElementById('audio-'+lastStatus).pause();
 	document.getElementById('audio-'+lastStatus).currentTime = 0;
 });
 
+
+
+
+// Set up the "click togglers" event functions
+for (i in alarmEnabled) {
+	var toggler = document.getElementById('proximity-'+i+'-toggle');
+	
+	var closure = function(j,t){
+		return function(){
+			alarmEnabled[j] = !alarmEnabled[j];
+			if (alarmEnabled[j]) {
+				t.className = 'toggler on';
+			} else {
+				t.className = 'toggler off';
+			}
+		}
+	}(i,toggler);
+	
+	toggler.addEventListener('click',closure);
+	
+}
 

@@ -1,45 +1,50 @@
 
-table {
-	width:100%;
-	width: 99vw;
-	max-height:60%;
-	max-height:60vw;
-	margin: 0.5vw;
-	table-layout:fixed;
-}
-
-
-table td, table th {
-	width: 25%;
-	font-size: 5.75vw;
-}
-
-table td {
-	text-align: right;
-	color: #c0c0c0;
-}
-
-table th {
-	text-align: right;
-	color: white;
-}
 
 div#status {
-	
 	margin-top: 25px;
-	margin-top: 5vh;
 	margin-bottom: 25px;
-	margin-bottom: 5vh;
-	
+
 	font-size: 50px;
-	font-size: 10vw;
 	line-height: 50px;
-	line-height: 10vw;
 	min-height:100px;
-	min-height:20vw;
 	text-align:center;
+	
+	font-size: 10vmin;
+	margin-top:5vmin;
+	margin-bottom:5vmin;
+	line-height:10vmin;
+	min-height:20vmin;
+	
+	
+/* 	width:15em; */
+}
+
+body {
+/* 	text-align:center; */
+}
+
+ul {
+	font-size:35px;
+	font-size:5vmin;
 }
 
 
+@media all and (orientation: portrait) {
+	ul {
+		display:block;
+		margin-top:0;
+		margin-bottom:0;
+		text-align:center;
+	}
+}
 
 
+@media all and (orientation: landscape) {
+	ul {
+		display:inline-block;
+		width:45%;
+		margin:none;
+		padding:5px;
+		text-align:center;
+	}
+}

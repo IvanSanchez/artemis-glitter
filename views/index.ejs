@@ -1,13 +1,15 @@
 
 <% include layout.ejs -%>
 
-<div style='overflow-y: auto; height:99vh'>
+<!-- <div style='overflow-y: auto; height:99vh'> -->
+
+<style>body{overflow:auto}</style>
 
 <h1>Welcome to Artemis Glitter</h1>
 
 <p id='ownaddress' class='margin:3em;'></p>
 
-<div style='float:left; width:40%; padding:0 5%; min-width:200px;'>
+<div style='display:inline-block; min-width:200px;'>
 <h2>Server and ship selection</h2>
 
 <p>Artemis server: 
@@ -20,22 +22,22 @@
 <!-- <p>Server status: <span id='status'></span></p> -->
 
 <div id='vessel-select' style='display:none'>
-<p>Vessel: <select id='playershipname'></select></p>
+Vessel: <select id='playershipname'></select>
 </div>
 
 
 </div>
 
-<div style='float:left; width:40%; padding:0 5%; min-width:200px;'>
+<div style='display:inline-block; min-width:200px;'>
 <h2>Console selection</h2>
 <ul>
-<li><a href='map'>Debug map</a>
-<li><a href='bearing-table'>Bearing-distance table</a>
-<li><a href='proximity'>Proximity monitor</a>
+<!-- <li><a href='map'>Debug map</a> -->
+<li><span class='w4 r'>BRG</span><span><a href='bearing-table'>Bearing-distance table</a></span>
+<li><span class='w4 r'>PROX</span><span><a href='proximity'>Proximity monitor</a></span>
 </div>
 
 
-</div>
+<!-- </div> -->
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/javascripts/worldmodel.js"></script>

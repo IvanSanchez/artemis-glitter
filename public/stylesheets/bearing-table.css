@@ -19,5 +19,6 @@ table td {
 
 table th {
 	text-align: center;
+	border: 5px solid #003;
 }
 

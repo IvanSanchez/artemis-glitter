@@ -53,7 +53,7 @@ function connect (addr, r) {
 }
 
 function disconnect (addr, r) {
-	retry = false;
+	retries = 0;
 	if (sock) {
 		sock.end();
 	}
@@ -193,6 +193,7 @@ function onPacket(buffer) {
 				    packetType != 'consoleStatus' &&
 				    packetType != 'gameRestart' &&
 				    packetType != 'soundEffect' &&
+				    packetType != 'commsIncoming' &&
 				    packetType != 'playerShipDamage' &&
 				    packetType != 'destroyObject') {
 					console.log(packetType, unpacked);
@@ -283,9 +284,9 @@ function onDisconnect(){
 	console.log('Disconnected from server!');
 	fireEvents('gameOver');
 	fireEvents('disconnected');
-	if (retry) {
+	if (retries) {
 		console.error('Trying to reconnect');
-		setTimeout(function(){connect(serverAddr,true)}, 1000);
+		setTimeout(function(){connect(serverAddr,retries-1)}, 1000);
 	}
 }
 

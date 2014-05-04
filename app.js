@@ -150,10 +150,6 @@ app.get('/ship-select/:shipIndex', function(req,res){
 
 
 
-
-process.argv.forEach(function (val, index, array) {
-	console.log(index + ': ' + val);
-});
 var headless = false;
 var autoConnect = false;
 
@@ -161,8 +157,9 @@ for (var i in process.argv) {
 	if (process.argv[i] == '--headless') {
 		headless = true;
 	}
-	if (process.argv[i] == '--server' && process.argv.length > i+1) {
-		autoConnect = process.argv[i+1];
+	if (process.argv[i] == '--server' && process.argv.length > i) {
+		autoConnect = process.argv[parseInt(i)+1];
+		console.log('Will autoconnect to server at ' + autoConnect);
 	}
 }
 

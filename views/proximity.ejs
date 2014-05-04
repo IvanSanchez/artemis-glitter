@@ -4,10 +4,29 @@
 
 <div id='status'></div>
 
-<table>
-<tr><th>DS  <td id='proximity-ds' ><th>HOS<td id='proximity-hos' >
-<tr><th>NEB <td id='proximity-neb'><th>MNE<td id='proximity-mine'>
-<tr><th>HZD <td id='proximity-hzd'><th>DRN<td id='proximity-drone'>
+<ul>
+<li><span class='w3'>SHL 
+	</span><span id='proximity-shl' class='w4 r'>DWN
+	</span><span id='proximity-shl-toggle' class='toggler on'></span>
+<li><span class='w3'>NEB 
+	</span><span id='proximity-neb' class='w4 r'>
+	</span><span id='proximity-neb-toggle' class='toggler on'></span>
+<li><span class='w3'>HZD 
+	</span><span id='proximity-hzd' class='w4 r'>
+	</span><span id='proximity-hzd-toggle' class='toggler on'></span>
+</ul>
+<ul>
+<li><span class='w3'>HOS 
+	</span><span id='proximity-hos' class='w4 r'>
+	</span><span id='proximity-hos-toggle' class='toggler on'></span>
+<li><span class='w3'>MNE 
+	</span><span id='proximity-mine' class='w4 r'>
+	</span><span id='proximity-mine-toggle' class='toggler on'></span>
+<li><span class='w3'>DRN 
+	</span><span id='proximity-drone' class='w4 r'>
+	</span><span id='proximity-drone-toggle' class='toggler on'></span>
+</ul>
+
 
 </table>
 <audio src='/voice/entering-nebula.ogg'   preload="auto" id='audio-nebula'></audio>
@@ -27,4 +46,5 @@
 <script src="/javascripts/prettyprint.js"></script>
 <script src="/javascripts/worldmodel.js"></script>
 <script src="/javascripts/connectionlost.js"></script>
+<script src="/javascripts/redalert.js"></script>
 <script src="/javascripts/proximity.js"></script>
