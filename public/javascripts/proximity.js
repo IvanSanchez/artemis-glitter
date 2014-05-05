@@ -130,11 +130,17 @@ function checkProximity() {
 	if (lastStatus !== status) {
 	
 		if(lastStatus && lastStatus!='initial') {
-			document.getElementById('audio-'+lastStatus).pause();
-			document.getElementById('audio-'+lastStatus).currentTime = 0;
+			var player = document.getElementById('audio-'+lastStatus);
+			if (player) {		
+				player.pause();
+				player.currentTime = 0;
+			}
 		}
 		if(status) {
-			document.getElementById('audio-'+status).play();
+			var player = document.getElementById('audio-'+status);
+			if (player) {
+				player.play();
+			}
 		}
 	
 		var statusDiv = document.getElementById('status');
@@ -143,7 +149,7 @@ function checkProximity() {
 		} else if (status == 'enemy') {
 			statusDiv.innerHTML = '<span class="red">NEARBY<br>HOSTILE</span>';
 		} else if (status == 'mine') {
-			statusDiv.innerHTML = '<span class="alert">PROXIMITY<br>ALERT</span>';
+			statusDiv.innerHTML = '<span class="alert">MINEFIELD<br>NEARBY</span>';
 		} else if (status == 'redalert') {
 			statusDiv.innerHTML = '<span class="alert">RED<br>ALERT</span>';
 		} else if (status == 'drone') {
@@ -176,7 +182,7 @@ var statusInterval = window.setInterval(checkProximity,100);
 iface.on('playerShipDamage', function() {
 	if (! (model.entities[model.playerShipID].shieldState) &&
 	    alarmEnabled.shl) {
-		var player = document.getElementById('audio-'+lastStatus)
+		var player = document.getElementById('audio-'+lastStatus);
 		if (player) {
 			player.pause();
 			player.currentTime = 0;
@@ -191,7 +197,7 @@ iface.on('playerShipDamage', function() {
 		lastStatus = 'shields'
 		window.setTimeout(function(){
 			checkingProximity = false;
-		},2000);
+		},2500);
 	}
 });
 
@@ -214,8 +220,11 @@ iface.on('playerUpdate',function(data) {
 
 // Pause a potentially looped sound on game end
 iface.on('gameOverReason',function(){
-	document.getElementById('audio-'+lastStatus).pause();
-	document.getElementById('audio-'+lastStatus).currentTime = 0;
+	var player = document.getElementById('audio-'+lastStatus);
+	if (player) {
+		player.pause();
+		player.currentTime = 0;
+	}
 });
 
 
