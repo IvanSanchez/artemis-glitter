@@ -14,7 +14,4 @@ results
 npm-debug.log
 node_modules
 
-build/*.zip
-build/*.tar.gz
-build/node-webkit*
-build/artemis-glitter*
+build/*
