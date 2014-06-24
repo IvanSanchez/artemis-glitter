@@ -70,6 +70,24 @@ If you are a techie with a very clear idea for a small change, then, by all mean
 If you're not a techie and want to suggest something, I'd really appreciate if you'd read http://catb.org/~esr/faqs/smart-questions.html before hitting the keyboard.
 
 
+How do I build this?
+------------------------
+
+This package is based on `node.js` and uses `npm` for downloading and installing dependencies.  Platform packages are built using `grunt` and `grunt-node-webkit-builder`.
+
+So the quick version to build this package is:
+
+Install `grunt-cli` via `npm` if you haven't done this already:
+
+   $ npm install -g grunt-cli
+
+Then install the build dependencies like so:
+
+   $ npm install
+
+Finally, build the packages:
+
+   $ grunt
 
 
 
