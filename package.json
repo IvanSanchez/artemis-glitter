@@ -9,7 +9,7 @@
     , "height": 600
   }
   , "devDependencies": {
-    "grunt": "latest"
+      "grunt": "latest"
     , "grunt-node-webkit-builder": "latest"
   }
   , "dependencies": {
