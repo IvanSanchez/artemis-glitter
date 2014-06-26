@@ -175,7 +175,6 @@ function onPacket(buffer) {
 				console.error('Unknown packet!', header.type, header.subtype);
 			}
 
-					
 			// Unfortunately, there might be some bugs still present
 			//   with random crashes involving reading outside the
 			//   recv buffer, so let's wrap this into a try-catch...
@@ -184,18 +183,19 @@ function onPacket(buffer) {
 				var unpacked = packetDef.unpack(data);
 				packets.push(unpacked);
 				
-				// Debug: log non-entity-update packets
+				// Debug: log non-entity-update, non-usually-seen packets
 				if (header.type != 0x80803df9 &&
-				    packetType != 'togglePause' &&
-				    packetType != 'intel' &&
-				    packetType != 'damcon' &&
-				    packetType != 'beamFired' &&
-				    packetType != 'consoleStatus' &&
-				    packetType != 'gameRestart' &&
-				    packetType != 'soundEffect' &&
-				    packetType != 'commsIncoming' &&
-				    packetType != 'playerShipDamage' &&
-				    packetType != 'destroyObject') {
+					packetType != 'togglePause' &&
+					packetType != 'intel' &&
+					packetType != 'damcon' &&
+					packetType != 'beamFired' &&
+					packetType != 'consoleStatus' &&
+					packetType != 'gameRestart' &&
+					packetType != 'soundEffect' &&
+					packetType != 'commsIncoming' &&
+					packetType != 'playerShipDamage' &&
+					packetType != 'weaponsUpdate' &&
+					packetType != 'destroyObject') {
 					console.log(packetType, unpacked);
 				}
 				
@@ -352,7 +352,7 @@ function registerPacketType( packet ) {
 			type: packet.type,
 			name: "subpacket",
 			subpackets: true,
-		        subtypeLength: packet.subtypeLength
+				subtypeLength: packet.subtypeLength
 		};
 		
 		if (!knownSubPackets.hasOwnProperty(packet.type)) {

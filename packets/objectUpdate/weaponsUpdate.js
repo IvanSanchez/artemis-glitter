@@ -2,7 +2,7 @@
 // Provides an update on the status of the player ship.
 
 
-exports.name = 'engineeringUpdate';
+exports.name = 'weaponsUpdate';
 
 exports.type = 0x80803df9;
 
@@ -47,16 +47,6 @@ exports.unpack = function(data) {
 	if (bits.get(18)) { unpacked.tubeContents5 = data.readByte();}
 	if (bits.get(17)) { unpacked.tubeContents6 = data.readByte(); }
 	if (bits.get(16)) { /* Unused */ }
-	
-	// Last byte of the bytefield seems to be unused.
-// 	if (bits.get(31)) { unpacked.heatBeams     = data.readLong(); }
-// 	if (bits.get(30)) { unpacked.heatTorpedoes = data.readByte(); }
-// 	if (bits.get(29)) { unpacked.heatSensors   = data.readFloat();}  
-// 	if (bits.get(28)) { unpacked.heatManeuver  = data.readByte(); }
-// 	if (bits.get(27)) { unpacked.heatImpulse   = data.readByte(); }
-// 	if (bits.get(26)) { unpacked.heatWarp      = data.readByte(); }
-// 	if (bits.get(25)) { unpacked.heatForShields= data.readLong(); }
-// 	if (bits.get(24)) { unpacked.heatAftShields= data.readLong(); }
 	
 	console.log('Weapons update: ',unpacked);	
 	

@@ -82,6 +82,11 @@ artemisBufferReader.prototype.peekLong = function() {
 	return this.buffer.readUInt32LE(this.pointer);
 };
 
+// Like readFloat, but doesn't advance the pointer. Used as a fallback for the version packet.
+artemisBufferReader.prototype.peekFloat = function() {
+	return this.buffer.readFloatLE(this.pointer);
+};
+
 
 
 

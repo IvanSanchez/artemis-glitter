@@ -203,10 +203,9 @@ iface.on('playerShipDamage', function() {
 
 
 // Display shield status when it changes.
-iface.on('playerUpdate',function(data) {
+iface.on('ownShipUpdate',function(data) {
 	
-	if (data.id == model.playerShipID
-	    && data.hasOwnProperty('shieldState')) {
+	if (data.hasOwnProperty('shieldState')) {
 		
 		if (data.shieldState) {
 			document.getElementById('proximity-shl').innerHTML   = 'UP';
@@ -214,7 +213,6 @@ iface.on('playerUpdate',function(data) {
 			document.getElementById('proximity-shl').innerHTML   = 'DWN';
 		}
 	}
-	
 });
 
 
@@ -226,7 +224,6 @@ iface.on('gameOverReason',function(){
 		player.currentTime = 0;
 	}
 });
-
 
 
 

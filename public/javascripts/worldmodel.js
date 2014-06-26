@@ -1,13 +1,13 @@
 
 // Implements a persistent world model on top of the low-level network
-//   interface.
+//   interface, plus some event handlers on top.
 
 
 // Holds all known data for all known entities.
 // The key of each one is the numeric ID of the entity.
 var model = {
 	connected: false,
-	serverVersion: null,
+	serverVersion: {major:null,minor:null,patch:null},
 	
 	// Holds all known data for all known entities.
 	// The key of each one is the numeric ID of the entity.
@@ -23,7 +23,6 @@ var model = {
 	allShipSettings: [],	// Used only during pre-game during ship selection screen
 	gameStarted: false,
 	gamePaused: 0,	// 0 means playing, 1 means pausing, 2 means paused.
-
 	
 	damconNodes:{},
 	damconTeams:{},
@@ -36,6 +35,7 @@ var model = {
 		updateEntity: [],
 		destroyEntity: [],
 		newOrUpdateEntity: [],
+		ownShipUpdate: [],
 		glitterDisconnect: []
 	}
 };
@@ -115,7 +115,7 @@ iface.on('gameOver', function(){
 	model.intel = {};
 	model.playerShipID = null;
 	model.engineering  = {id: null};
-	model.weapons      = {id: null};
+	model.weapons	 = {id: null};
 	model.gameStarted  = false;
 	console.log('Game over, clearing world model');
 });
@@ -160,8 +160,9 @@ iface.on('playerUpdate', function (data) {
 	// Update playerShipID if data matches with playerShipIndex
 	if (data.shipNumber == model.playerShipIndex+1) {
 		model.playerShipID = data.id;
-	}	
-	
+		updateEntity(data, 1);
+		model.fireEvents('ownShipUpdate',model.entities[data.id]);
+	}
 	updateEntity(data, 1);
 });
 
@@ -223,6 +224,18 @@ iface.on('droneUpdate', function (data) {
 iface.on('beamFired', function (data) {
 	// Protocol doesn't cover beams, so let's arbitrarily set -1
 	updateEntity(data, -1);
+});
+
+iface.on('weaponsUpdate', function (data) {
+	// Protocol doesn't cover weapons, so let's arbitrarily set -2
+	updateEntity(data,-2);
+	model.weapons = model.entities[data.id];
+});
+
+iface.on('engineeringUpdate', function (data) {
+	// Protocol doesn't cover engineering, so let's arbitrarily set -3
+	updateEntity(data,-3);
+	model.engineering = model.entities[data.id];
 });
 
 var cloakingFlashCount = 1000000;
@@ -429,10 +442,6 @@ if (onBrowser) {
 		res.end();
 	};
 
-	
-	// Import angles & trigonometry helper library.
-// 	var angles = require('./angles');
-	
 }
 
 

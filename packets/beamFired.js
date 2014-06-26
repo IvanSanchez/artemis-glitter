@@ -37,8 +37,8 @@ exports.unpack = function(data) {
 		target:   data.readLong(),
 		
 		impactX: data.readFloat(),
-		impactZ: data.readFloat(),
 		impactY: data.readFloat(),
+		impactZ: data.readFloat(),
 		
 		unknown10: data.readLong()
 	}
