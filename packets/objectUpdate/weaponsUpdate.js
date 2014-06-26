@@ -48,7 +48,7 @@ exports.unpack = function(data) {
 	if (bits.get(17)) { unpacked.tubeContents6 = data.readByte(); }
 	if (bits.get(16)) { /* Unused */ }
 	
-	console.log('Weapons update: ',unpacked);	
+// 	console.log('Weapons update: ',unpacked);	
 	
 	return unpacked;
 }

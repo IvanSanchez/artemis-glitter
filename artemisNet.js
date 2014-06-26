@@ -190,9 +190,9 @@ function onPacket(buffer) {
 					packetType != 'damcon' &&
 					packetType != 'beamFired' &&
 					packetType != 'consoleStatus' &&
-					packetType != 'gameRestart' &&
+// 					packetType != 'gameRestart' &&
 					packetType != 'soundEffect' &&
-					packetType != 'commsIncoming' &&
+// 					packetType != 'commsIncoming' &&
 					packetType != 'playerShipDamage' &&
 					packetType != 'weaponsUpdate' &&
 					packetType != 'destroyObject') {

@@ -115,6 +115,21 @@ artemisBufferReader.prototype.writeFloat = function(data) {
 	return number;
 };
 
+artemisBufferReader.prototype.writeString = function(data) {
+	var strLen = data.length;
+	this.buffer.writeUInt32LE(strLen+1, this.pointer);
+	this.pointer += 4;
+	
+	/// HACK: Node doesn't seem to handle little-endian UTF16 well enough on ARMel CPUs, so let's fall back to ASCII for the time being.
+	this.buffer.write(data,this.pointer, strLen*2, 'utf16le');
+// 	this.buffer.write(data,this.pointer, strLen*2, 'ascii');
+	this.pointer += strLen*2;
+	this.buffer.writeUInt16LE(0, this.pointer);
+	this.pointer += 2;
+	
+};
+
+
 /// FIXME!!!
 // artemisBufferReader.prototype.writeBitArray = function(bytes) {
 // 	var slice = this.buffer.slice(this.pointer, this.pointer+bytes);
