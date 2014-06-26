@@ -30,6 +30,9 @@ var model = {
 	skybox: null,
 	difficulty: null,
 	
+	serverIPs: [],
+	serverVersion: [],
+	
 	eventHandlers: {
 		newEntity: [],
 		updateEntity: [],
@@ -274,6 +277,18 @@ iface.on('destroyObject', function (data) {
 iface.on('consoleStatus', function(data){
 	// The index received here is 1-based, whereas everywhere else is 0-based
 	model.playerShipIndex = data.playerShip - 1;
+	
+	
+	/// FIXME!!! Temporary fix for 2.1.1 bugs
+	if (model.playerShipIndex < 0) {
+		model.playerShipIndex = 0;
+	}
+	
+	if (model.playerShipIndex > 7) {
+		model.playerShipIndex = 7;
+	}
+	
+	
 // 	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
 });
 
@@ -298,6 +313,10 @@ iface.on('togglePause', function (data) {
 
 iface.on('difficulty', function (data) {
 	model.difficulty = data.difficulty;
+});
+
+iface.on('version', function (data) {
+	model.serverVersion = data;
 });
 
 
@@ -442,46 +461,37 @@ if (onBrowser) {
 		res.end();
 	};
 
+	var os=require('os');
+	var ifaces=os.networkInterfaces();
+	for (var dev in ifaces) {
+		ifaces[dev].forEach(function(details){
+			if (details.family=='IPv4') {
+				if (details.address.toString().substr(0,3)!=="127") {
+					model.serverIPs.push('http://' + details.address + ':3000');
+				}
+			}
+		});
+	}
+	
+	
 	function broadcastGlitterAddress() {
 	  
-		////  FIXME!!!!!!
+// 		////  FIXME!!!!!!
 	  
 		if (!model.entities.hasOwnProperty(model.playerShipID)) {
-		  
-		iface.emit('gameMasterMessage', {
-			origin: 'Glitter',
-			body: 'The vessel Artemis is running Glitter. Use a web browser to visit http://127.0.0.1:3000 and access extra consoles.'
-		});		  
-		  
-		  
 			console.log('broadcastGlitterAddress: Player ship not in world model yet');
-// 			setTimeout(broadcastGlitterAddress, 5000);
+			setTimeout(broadcastGlitterAddress, 5000);
 			return;
 		}
 	  
-		var vesselName = model.entities[model.playerShipID].name;
-		
-		var publicIPs = [];
-		// Network interface detection is done every time, so that
-		//   the glitter server can accommodate changes to its
-		//   network profile, e.g. connect to a wifi network
-		// With inspiration from https://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js
-		var os=require('os');
-		var ifaces=os.networkInterfaces();
-		for (var dev in ifaces) {
-			ifaces[dev].forEach(function(details){
-				if (details.family=='IPv4') {
-					if (details.address.toString().substr(0,3)!=="127") {
-						publicIPs.push('http://' + details.address + ':' + tcpPort);
-					}
-				}
-			});
-		}
-		
+		var vesselName = model.entities[model.playerShipID].shipName;	  
 		iface.emit('gameMasterMessage', {
 			origin: 'Glitter',
-			body: 'The vessel ' + vesselName + ' is running Glitter at ' + publicIPs.join(', ')
-		});
+			body: 'The vessel ' + vesselName + 
+				' is running Glitter. Use a web browser to visit ' + 
+				model.serverIPs.join(', ') + ' and access extra consoles.'
+		});  
+
 	}
 	
 	iface.on('gameRestart', broadcastGlitterAddress, 5000);

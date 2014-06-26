@@ -82,7 +82,7 @@ function grabStations() {
 // 	artemisNet.emit('setStation', {station:3, selected:1}); // Engine
 	artemisNet.emit('setStation', {station:4, selected:1}); // Sci
 	artemisNet.emit('setStation', {station:5, selected:1}); // Comms
-	artemisNet.emit('setStation', {station:6, selected:1}); // Observ
+// 	artemisNet.emit('setStation', {station:6, selected:1}); // Observ
 // 	artemisNet.emit('setStation', {station:7, selected:1}); // Capt
 // 	artemisNet.emit('setStation', {station:8, selected:1}); // GM
 	

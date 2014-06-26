@@ -9,12 +9,19 @@ exports.subtype = null;
 
 exports.pack = null;	// Only from server to client
 
+// ef be ad de 2c 00 00 00 01 00 00 00 00 00 00 00 18 00 00 00 4a e7 48 e5 
+// fc 01 00 00 00 00 00 40 02 00 00 00 01 00 00 00 01 00 00 00 
+
+
+
 exports.unpack = function(data) {
-	var unknown = data.readLong();
+	var unknown1 = data.readLong();
 
 	var versionFloat = data.peekFloat();
 
 	try {
+// 		var unknown1 = data.readLong();
+		var unknown2 = data.readLong();
 		var major = data.readLong();
 		var minor = data.readLong();
 		var patch = data.readLong();
@@ -26,7 +33,8 @@ exports.unpack = function(data) {
 		}
 
 		return {
-			unknown: unknown,
+			unknown1: unknown1,
+			unknown2: unknown2,
 			major: major,
 			minor: minor,
 			patch: patch

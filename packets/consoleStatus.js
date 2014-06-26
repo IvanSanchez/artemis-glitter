@@ -32,7 +32,10 @@ exports.unpack = function(data) {
 	unpacked.communications= data.readByte();
 	unpacked.observer      = data.readByte();
 	unpacked.gameMaster    = data.readByte();
+	unpacked.data          = data.readByte();
 	unpacked.unknown       = data.readByte();
+	
+	console.log("Console Status: ", unpacked);
 	
 	return unpacked;
 }
