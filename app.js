@@ -11,9 +11,19 @@ var express = require('express')
 
 var app = module.exports = express();
 
-var tcpPort = 3000;
+// Set a default configuration directory if one does not exist.
+process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || (path.dirname(module.uri) + '/config');
 
-// Configuration
+var config = require('config');
+// Contains:
+// config.tcpPort
+// config.artemisServerAddr
+// config.shipIndex
+// config.headless
+
+
+
+// Express.js configuration
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
@@ -51,7 +61,7 @@ var server = require('http').Server(app);
 var io = require('socket.io').listen(server);
 io.set('log level', 1); // reduce logging
 
-server.listen(tcpPort);
+server.listen(config.tcpPort);
 
 
 // When socket.io is ready: for every packet we receive from the
@@ -88,7 +98,6 @@ function grabStations() {
 	
 	artemisNet.emit('ready'); 
 	console.log('Consoles have been requested.')
-	
 }
 
 artemisNet.on('welcome', function(){
@@ -104,8 +113,10 @@ artemisNet.on('welcome', function(){
 //   'localhost', which is used in the internal web browser).
 var artemisServerAddr = null;
 app.get('/connect/:server', function(req,res){
-	artemisNet.connect(req.params.server, 10);
-	artemisServerAddr = req.params.server;
+	config.artemisServerAddr = req.params.server;
+	artemisNet.connect(config.artemisServerAddr, 10);
+	artemisNet.emit('shipSelect', {shipIndex:config.shipIndex});
+	grabStations();
 	res.end();
 });
 app.get('/disconnect', function(req,res){
@@ -119,6 +130,8 @@ app.get('/artemis-server', function(req,res){
 	res.end();
 });
 app.get('/glitter-address', function(req,res){
+
+	// Note this code is duplicated in the worldmodel.
 
 	var publicIPs = [];
 	// Network interface detection is done every time, so that
@@ -142,16 +155,13 @@ app.get('/glitter-address', function(req,res){
 });
 
 
-app.get('/ship-select/:shipIndex', function(req,res){
-	artemisNet.emit('shipSelect', {shipIndex:req.params.shipIndex});
+app.get('/ship-select/:playerShipIndex', function(req,res){
+	config.playerShipIndex = req.params.playerShipIndex;
+	artemisNet.emit('shipSelect', {shipIndex:config.playerShipIndex});
 	grabStations();
 	res.end();
 });
 
-
-
-var headless = false;
-var autoConnect = false;
 
 for (var i in process.argv) {
 	if (process.argv[i] == '--headless') {

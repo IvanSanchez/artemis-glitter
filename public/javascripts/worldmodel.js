@@ -123,10 +123,11 @@ iface.on('gameOver', function(){
 	console.log('Game over, clearing world model');
 });
 
-iface.on('gameStart', function(){
-	model.gameStarted  = true;
-	console.log('Game started.');
-});
+/// FIXME: This message is no longer used???
+// iface.on('gameStart', function(){
+// 	model.gameStarted  = true;
+// 	console.log('Game started.');
+// });
 
 iface.on('gameRestart', function(){
 	model.gameStarted  = true;
@@ -280,13 +281,13 @@ iface.on('consoleStatus', function(data){
 	
 	
 	/// FIXME!!! Temporary fix for 2.1.1 bugs
-	if (model.playerShipIndex < 0) {
-		model.playerShipIndex = 0;
-	}
-	
-	if (model.playerShipIndex > 7) {
-		model.playerShipIndex = 7;
-	}
+// 	if (model.playerShipIndex < 0) {
+// 		model.playerShipIndex = 0;
+// 	}
+//
+// 	if (model.playerShipIndex > 7) {
+// 		model.playerShipIndex = 7;
+// 	}
 	
 	
 // 	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
@@ -339,7 +340,7 @@ iface.on('damcon', function (data) {
 	}
 });
 
-iface.on('difficulty', function (data) {
+iface.on('incomingAudio', function (data) {
 	var id = data.id;
 	if (!model.incomingAudio.hasOwnProperty(id)) {
 		model.incomingAudio[id] = data;
@@ -390,23 +391,31 @@ if (onBrowser) {
 		var receivedModel = JSON.parse(this.responseText);
 		model.entities = receivedModel.entities;
 		model.comms    = receivedModel.comms;
+		model.incomingAudio   = receivedModel.incomingAudio;
 		model.intel    = receivedModel.intel;
 		model.playerShipID    = receivedModel.playerShipID;
 		model.playerShipIndex = receivedModel.playerShipIndex;
 		model.engineering     = receivedModel.engineering;
 		model.weapons         = receivedModel.weapons;
 		model.allShipSettings = receivedModel.allShipSettings;
-		model.gameStarted     = receivedModel.gameStarted
+		model.gameStarted     = receivedModel.gameStarted;
+		model.gamePaused      = receivedModel.gamePaused;
+		model.damconNodes     = receivedModel.damconNodes;
+		model.damconTeams     = receivedModel.damconTeams;
+		model.skybox          = receivedModel.skybox;
+		model.difficulty      = receivedModel.difficulty;
+		model.serverIPs       = receivedModel.serverIPs;
+		model.serverVersion   = receivedModel.serverVersion;
 		for (i in model.entities) {
 			model.fireEvents('newEntity', model.entities[i]);
 			model.fireEvents('newOrUpdateEntity', model.entities[i]);
 		}
-		
+
 		// Some socket-io hackish tricks to fire some fake events
 		for (var i in iface.$events.allShipSettings) {
 			iface.$events.allShipSettings[i](model.allShipSettings);
 		}
-		
+
 // 		if (model.gameStarted) {
 // 			iface.emit('gameRestart');
 // 			iface.emit('gameStart');
@@ -491,7 +500,6 @@ if (onBrowser) {
 				' is running Glitter. Use a web browser to visit ' + 
 				model.serverIPs.join(', ') + ' and access extra consoles.'
 		});  
-
 	}
 	
 	iface.on('gameRestart', broadcastGlitterAddress, 5000);

@@ -9,11 +9,6 @@ exports.subtype = null;
 
 exports.pack = null;	// Only from server to client
 
-// ef be ad de 2c 00 00 00 01 00 00 00 00 00 00 00 18 00 00 00 4a e7 48 e5 
-// fc 01 00 00 00 00 00 40 02 00 00 00 01 00 00 00 01 00 00 00 
-
-
-
 exports.unpack = function(data) {
 	var unknown1 = data.readLong();
 
