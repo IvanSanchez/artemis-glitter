@@ -20,5 +20,6 @@
     , "socket.io": ">= 1.0.6"
     , "opener": ">= 1.3.0"
     , "config": "latest"
+    , "node-xml-lite": ">=0.0.3"
   }
 }
