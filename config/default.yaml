@@ -14,3 +14,9 @@ playerShipIndex: 1
 
 # Set to true to skip the launch of a web browser to the default webpage at start-up.
 headless: false
+
+
+# Location of the vesselData.xml and the *.snt files. By default, relative to
+#   Glitter's directory.
+datDir: ./dat
+

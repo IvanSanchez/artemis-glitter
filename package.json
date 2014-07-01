@@ -21,5 +21,6 @@
     , "opener": ">= 1.3.0"
     , "config": "latest"
     , "node-xml-lite": ">=0.0.3"
+    , "js-yaml": ">=3.0.0"
   }
 }
