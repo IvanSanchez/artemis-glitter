@@ -18,6 +18,7 @@ var model = {
 	
 	playerShipID: null,	// Tipically around 1010 or so.
 	playerShipIndex: null,	// From 0 to 7
+	playerShipType: null,   // Typically from 0 to 4, refers to vesseldata.
 	engineering: {id: null},	// Status of own engineering console
 	weapons: {id: null},	// Status of own weapons console
 	allShipSettings: [],	// Used only during pre-game during ship selection screen
@@ -33,6 +34,8 @@ var model = {
 	serverIPs: [],
 	serverVersion: [],
 	
+	vesselData: {},
+
 	eventHandlers: {
 		newEntity: [],
 		updateEntity: [],
@@ -68,7 +71,7 @@ model.off = function(eventType, fn) {
 //   containing the human-readable contents of the packet.
 // In the special case of the 'packet' event, a 'packetType' 
 //   is added to the struct.
-model.fireEvents = function (eventType, data) {
+model.emit = function (eventType, data) {
 	for (var i in model.eventHandlers[eventType]) {
 		model.eventHandlers[eventType][i](data);
 	}
@@ -81,7 +84,7 @@ var onBrowser = true;
 
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-	// Runnint on node.js
+	// Running on node.js
 	iface = require('../../artemisNet');
 	onBrowser = false;
 } else {
@@ -90,7 +93,7 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 		console.log('Connected to Glitter server socket.io');
 		iface.on('disconnect', function(){
 			console.log('Disconnected from Glitter server socket.io');
-			model.fireEvents('glitterDisconnect');
+			model.emit('glitterDisconnect');
 		});
 	});
 }
@@ -103,6 +106,7 @@ iface.on('connected', function(){
 
 iface.on('disconnected', function(){
 	model.connected = false;
+    model.emit('gameOver');
 });
 
 iface.on('version', function(data){
@@ -118,7 +122,7 @@ iface.on('gameOver', function(){
 	model.intel = {};
 	model.playerShipID = null;
 	model.engineering  = {id: null};
-	model.weapons	 = {id: null};
+	model.weapons      = {id: null};
 	model.gameStarted  = false;
 	console.log('Game over, clearing world model');
 });
@@ -142,7 +146,7 @@ function updateEntity(data, type){
 	if (!model.entities.hasOwnProperty(data.id)) {
 		model.entities[data.id] = data;
 		model.entities[data.id].entityType = type;
-		model.fireEvents('newEntity', data);
+		model.emit('newEntity', data);
 		
 // 		console.log('New contact: ', data.id, type, data.shipName);
 	} else {
@@ -151,22 +155,31 @@ function updateEntity(data, type){
 			///   to help identify more fields.
 			model.entities[data.id][key] = data[key];
 		}
-		model.fireEvents('updateEntity', model.entities[data.id]);
+		model.emit('updateEntity', model.entities[data.id]);
 	}
 	model.entities[data.id].timestampUpdated = (new Date()).getTime();
 	
-	model.fireEvents('newOrUpdateEntity', model.entities[data.id]);
+	model.emit('newOrUpdateEntity', model.entities[data.id]);
 };
 
 iface.on('playerUpdate', function (data) {
-	// Entity type 1 = Player ship
-	
 	// Update playerShipID if data matches with playerShipIndex
 	if (data.shipNumber == model.playerShipIndex+1) {
-		model.playerShipID = data.id;
-		updateEntity(data, 1);
-		model.fireEvents('ownShipUpdate',model.entities[data.id]);
+        if (!model.playerShipID) {
+            model.playerShipID = data.id;
+            updateEntity(data, 1);
+            model.emit('ownShipInit',  model.entities[data.id].shipType);
+            model.emit('ownShipUpdate',model.entities[data.id]);
+            return;
+        } else {
+            model.playerShipID = data.id;
+            updateEntity(data, 1);
+            model.emit('ownShipUpdate',model.entities[data.id]);
+            return;
+        }
 	}
+
+	// Entity type 1 = Player ship
 	updateEntity(data, 1);
 });
 
@@ -244,11 +257,11 @@ iface.on('engineeringUpdate', function (data) {
 
 var cloakingFlashCount = 1000000;
 iface.on('cloakFlash', function (data) {
-	// This weird packet seems to have coordinates for jumps, but dunno
-	//   what it means.
+	// This weird packet seems to have coordinates for jumps/cloaks, but dunno
+	//   what it really means.
 	data.id = cloakingFlashCount++;
 	data.shipName = 'Cloak';
-	updateEntity(data, -2);
+	updateEntity(data, -4);
 });
 
 var commsCounter = 0;
@@ -268,27 +281,17 @@ iface.on('commsIncoming', function (data) {
 });
 
 iface.on('destroyObject', function (data) {
-	model.fireEvents('destroyEntity', data);
+	model.emit('destroyEntity', data);
 	delete(model.entities[data.id]);
 });
 
 
 // The consoleStatus packet only is sent for the current vessel,
-//   and we won't interactively select the consoles, so...
+//   and we won't interactively select the consoles, so we can ignore most of
+//   the information there.
 iface.on('consoleStatus', function(data){
 	// The index received here is 1-based, whereas everywhere else is 0-based
 	model.playerShipIndex = data.playerShip - 1;
-	
-	
-	/// FIXME!!! Temporary fix for 2.1.1 bugs
-// 	if (model.playerShipIndex < 0) {
-// 		model.playerShipIndex = 0;
-// 	}
-//
-// 	if (model.playerShipIndex > 7) {
-// 		model.playerShipIndex = 7;
-// 	}
-	
 	
 // 	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
 });
@@ -407,14 +410,19 @@ if (onBrowser) {
 		model.serverIPs       = receivedModel.serverIPs;
 		model.serverVersion   = receivedModel.serverVersion;
 		for (i in model.entities) {
-			model.fireEvents('newEntity', model.entities[i]);
-			model.fireEvents('newOrUpdateEntity', model.entities[i]);
+			model.emit('newEntity', model.entities[i]);
+			model.emit('newOrUpdateEntity', model.entities[i]);
 		}
 
 		// Some socket-io hackish tricks to fire some fake events
 		for (var i in iface.$events.allShipSettings) {
 			iface.$events.allShipSettings[i](model.allShipSettings);
 		}
+
+		if (model.gameStarted) {
+            model.emit('gameStarted');
+        }
+
 
 // 		if (model.gameStarted) {
 // 			iface.emit('gameRestart');
@@ -455,8 +463,8 @@ if (onBrowser) {
 				model.entities[i].posX = newCoords[0];
 				model.entities[i].posZ = newCoords[1];
 				model.entities[i].timestampUpdated = now;
-				model.fireEvents('updateEntity', model.entities[i]);
-				model.fireEvents('newOrUpdateEntity', model.entities[i]);
+				model.emit('updateEntity', model.entities[i]);
+				model.emit('newOrUpdateEntity', model.entities[i]);
 			}
 		} 
 		
@@ -486,7 +494,6 @@ if (onBrowser) {
 	function broadcastGlitterAddress() {
 	  
 // 		////  FIXME!!!!!!
-	  
 		if (!model.entities.hasOwnProperty(model.playerShipID)) {
 			console.log('broadcastGlitterAddress: Player ship not in world model yet');
 			setTimeout(broadcastGlitterAddress, 5000);

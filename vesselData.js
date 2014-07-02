@@ -142,12 +142,10 @@ for (i in tree.childs) {
     }
 }
 
-console.log(vessels);
+// console.log(vessels);
+console.log(vessels[0]);
 
 
-// console.log(factions[0]);
-
-// readSnt('artemis.snt');
-
-exports = vessels;
+exports.vessels = vessels;
+exports.factions = factions;
 
