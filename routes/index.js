@@ -29,3 +29,11 @@ exports.bearingTable = function(req, res){
 exports.proximity = function(req, res){
 	res.render('proximity', { title: 'Proximity Monitor - Artemis Glitter' });
 };
+
+
+/*
+ * GET torpedo tubes screen.
+ */
+exports.tubes = function(req, res){
+	res.render('tubes', { title: 'Torpedo Tubes - Artemis Glitter' });
+};

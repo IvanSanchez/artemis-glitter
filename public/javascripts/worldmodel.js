@@ -35,14 +35,17 @@ var model = {
 	serverVersion: [],
 	
 	vesselData: {},
+	factionData: {},
 
 	eventHandlers: {
 		newEntity: [],
 		updateEntity: [],
 		destroyEntity: [],
 		newOrUpdateEntity: [],
+		ownShipInit: [],
 		ownShipUpdate: [],
-		glitterDisconnect: []
+		glitterDisconnect: [],
+		loaded: []
 	}
 };
 
@@ -86,6 +89,11 @@ var onBrowser = true;
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 	// Running on node.js
 	iface = require('../../artemisNet');
+	model.vesselData  = require('../../vesselData').vessels;
+	model.factionData = require('../../vesselData').factions;
+	
+// 	console.log(model.vesselData);
+	
 	onBrowser = false;
 } else {
 	iface = io.connect();
@@ -409,19 +417,29 @@ if (onBrowser) {
 		model.difficulty      = receivedModel.difficulty;
 		model.serverIPs       = receivedModel.serverIPs;
 		model.serverVersion   = receivedModel.serverVersion;
+		model.vesselData      = receivedModel.vesselData;
+		model.factionData     = receivedModel.factionData;
 		for (i in model.entities) {
 			model.emit('newEntity', model.entities[i]);
 			model.emit('newOrUpdateEntity', model.entities[i]);
 		}
 
-		// Some socket-io hackish tricks to fire some fake events
-		for (var i in iface.$events.allShipSettings) {
-			iface.$events.allShipSettings[i](model.allShipSettings);
+		if (model.playerShipID) {
+			model.emit('ownShipInit', model.entities[model.playerShipID].shipType);
+			model.emit('ownShipUpdate', model.entities[model.playerShipID]);
 		}
+		
+		model.emit('allShipSettings',model.allShipSettings);
+// 		iface.emit('weaponsUpdate'  ,model.weapons);
+		// Some socket-io hackish tricks to fire some fake events
+// 		for (var i in iface.$events.allShipSettings) {
+// 		}
+		
+		model.emit('loaded',model);
 
 		if (model.gameStarted) {
-            model.emit('gameStarted');
-        }
+			model.emit('gameStarted');
+		}
 
 
 // 		if (model.gameStarted) {
@@ -510,7 +528,6 @@ if (onBrowser) {
 	}
 	
 	iface.on('gameRestart', broadcastGlitterAddress, 5000);
-	
 }
 
 

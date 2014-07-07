@@ -9,8 +9,6 @@ exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
   
-	console.log('Raw difficulty: ', data);
-  
 	// Possible values for gameType are:
 	//   0 - Siege
 	//   1 - Single front

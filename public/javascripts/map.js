@@ -162,7 +162,7 @@ var map = new ol.Map({
   ],
   renderer: 'canvas',
   target: 'map',
-  view: new ol.View2D({
+  view: new ol.View({
     projection: artemisProjection,
     center: ol.extent.getCenter(artemisProjection.getExtent()),
     zoom: 1

@@ -13,11 +13,6 @@ exports.pack = null;	// Only from server to client
 
 exports.unpack = function(data) {
 	
-	/// FIXME!!!
-	/// The packet format has changed in 2.1, and now includes
-	///   more info, such as number of connected consoles.
-  
-  
 // 	Values for playerShip are 1 to 8
 // 	Values for availability are: 0 = available, 1 = mine, 2 = unavailable
 	
@@ -30,12 +25,10 @@ exports.unpack = function(data) {
 	unpacked.engineering   = data.readByte();
 	unpacked.science       = data.readByte();
 	unpacked.communications= data.readByte();
-	unpacked.observer      = data.readByte();
-	unpacked.gameMaster    = data.readByte();
 	unpacked.data          = data.readByte();
-	unpacked.unknown       = data.readByte();
-	
-	console.log("Console Status: ", unpacked);
+	unpacked.observer      = data.readByte();
+	unpacked.captainsmap   = data.readByte();
+	unpacked.gameMaster    = data.readByte();
 	
 	return unpacked;
 }

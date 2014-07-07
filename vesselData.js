@@ -10,7 +10,16 @@ console.log(config);
 
 /// TODO: Add config directory for vesselData.xml file
 
-var file = fs.readFileSync(config.datDir + '/vesselData.xml');
+var file;
+
+try {
+	file = fs.readFileSync(config.datDir + '/vesselData.xml');
+} catch(e) {
+	console.warn('Could not find the file vesselData.xml !!!');
+	exports.vessels  = {};
+	exports.factions = {};
+	return;
+}
 
 // Skip byte-order mark by skipping bytes until a "<" is found.
 while(file.readUInt8(0) != 0x3c) {
@@ -22,7 +31,7 @@ var tree = xml.parseBuffer(file);
 
 exports.version = tree.attrib.version;
 
-console.log(tree.childs);
+// console.log(tree.childs);
 
 var systemMap = {
     '-2': 'Void',
@@ -68,7 +77,7 @@ function readSnt(filename) {
                         graphicY: graphicY,
                         graphicZ: graphicZ
                     };
-                    console.log(x,y,z,/*a,b,c,d,*/graphicX,graphicY,graphicZ,systemMap[sys]);
+//                     console.log(x,y,z,/*a,b,c,d,*/graphicX,graphicY,graphicZ,systemMap[sys]);
                 }
 
                 i+=32;
@@ -84,15 +93,13 @@ var vessels  = {};
 for (i in tree.childs) {
     var node = tree.childs[i];
     if (node.name == 'hullRace') {
-        console.log('Faction ', node.attrib.ID, node.attrib.name);
+        console.log('Read Faction ', node.attrib.ID, node.attrib.name);
         factions[node.attrib.ID] = {name: node.attrib.name, taunts:[]};
         for (j in node.childs) {
             factions[node.attrib.ID].taunts.push(node.childs[j].attrib);
         }
     }
     if (node.name == 'vessel') {
-        console.log('Vessel ', node.attrib.uniqueID);
-
         var vessel = {
             faction: node.attrib.side,
             classname: node.attrib.classname,
@@ -133,19 +140,22 @@ for (i in tree.childs) {
                 vessel.performance = attrib;
             }
             else {
-                console.log('Unknown element: ', name)
+//                 console.log('Unknown element: ', name)
             }
 
         }
 
         vessels[node.attrib.uniqueID] = vessel;
+	
+	console.log('Read Vessel ', node.attrib.uniqueID, factions[vessel.faction].name, vessel.classname);
+
     }
 }
 
 // console.log(vessels);
-console.log(vessels[0]);
+// console.log(vessels[0]);
 
 
-exports.vessels = vessels;
+exports.vessels  = vessels;
 exports.factions = factions;
 

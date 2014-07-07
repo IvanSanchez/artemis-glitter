@@ -24,8 +24,12 @@ function checkConnected() {
 			startedMessage = 'Simulation started.'
 		}
 		
+		var version = model.serverVersion.major + '.' +
+		              model.serverVersion.minor + '.' +
+			      model.serverVersion.patch ;
+		
 		document.getElementById('connected').innerHTML =
-		 '<p>Glitter is connected to an Artemis server at IP: ' + serverIpAddr + ', server version ' + model.serverVersion + '</p>' +
+		 '<p>Glitter is connected to an Artemis server at IP: ' + serverIpAddr + ', server version ' + version + '</p>' +
 		 '<p>You\'re flying on the starship <span class="green shipname">' + vesselName + '</span>.</p>' +
 		 '<p>' + startedMessage + '</p>';
 

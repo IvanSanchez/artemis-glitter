@@ -14,11 +14,11 @@
 }
 
 body {
-  font: 15px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: #003;	/* Artemis' science dark blue */
-  color: #ccc;
-  overflow: hidden;
-  margin:0; padding:0;
+	font: 15px "Xolonium", "Lucida Grande", Helvetica, Arial, sans-serif;
+	background: #003;	/* Artemis' science dark blue */
+	color: #ccc;
+	overflow: hidden;
+	margin:0; padding:0;
 /*   width:15em; */
 }
 
@@ -169,14 +169,14 @@ div,ul,li {
 	margin: 1vmin;
 }
 
-div {
+/*div {
 	background: #001933;
 	
 	border: solid #036;
 	
 	padding:5px;
 	padding:1vmin;
-}
+}*/
 
 body.red-alert div {
 	border: 3px solid #600;

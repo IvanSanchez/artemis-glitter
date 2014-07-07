@@ -5,6 +5,7 @@
 
 var express = require('express')
   , opener  = require('opener')
+  , path    = require('path')
   , routes  = require('./routes')
   , artemisNet = require('./artemisNet')
   , artemisModel = require('./public/javascripts/worldmodel');
@@ -45,9 +46,10 @@ app.configure('production', function(){
 console.log(routes.index);
 app.get('/', routes.index);
 app.get('/model', artemisModel.returnModelAsJSON);
-app.get('/map', routes.map);
+app.get('/map',           routes.map);
 app.get('/bearing-table', routes.bearingTable);
-app.get('/proximity', routes.proximity);
+app.get('/proximity',     routes.proximity);
+app.get('/tubes',         routes.tubes);
 
 
 
@@ -86,15 +88,18 @@ artemisNet.on('disconnected', function(){
 function grabStations() {
 	/// FIXME!!! This is the console selection code, and perhaps should not
 	///   be placed here.
+  	artemisNet.emit('shipSelect', {shipIndex:config.playerShipIndex});
+  
 	artemisNet.emit('setStation', {station:0, selected:1});	// Main Scr
 // 	artemisNet.emit('setStation', {station:1, selected:1}); // Helm
 // 	artemisNet.emit('setStation', {station:2, selected:1}); // Weap
 // 	artemisNet.emit('setStation', {station:3, selected:1}); // Engine
-	artemisNet.emit('setStation', {station:4, selected:1}); // Sci
-	artemisNet.emit('setStation', {station:5, selected:1}); // Comms
-// 	artemisNet.emit('setStation', {station:6, selected:1}); // Observ
-// 	artemisNet.emit('setStation', {station:7, selected:1}); // Capt
-// 	artemisNet.emit('setStation', {station:8, selected:1}); // GM
+// 	artemisNet.emit('setStation', {station:4, selected:1}); // Sci
+// 	artemisNet.emit('setStation', {station:5, selected:1}); // Comms
+// 	artemisNet.emit('setStation', {station:6, selected:1}); // Data
+	artemisNet.emit('setStation', {station:7, selected:1}); // Observ
+// 	artemisNet.emit('setStation', {station:8, selected:1}); // Capt
+	artemisNet.emit('setStation', {station:9, selected:1}); // GM
 	
 	artemisNet.emit('ready'); 
 	console.log('Consoles have been requested.')
@@ -111,12 +116,11 @@ artemisNet.on('welcome', function(){
 // Functionality for connecting/disconnecting to/from the server
 //   and knowing our own public IP address (which is different from
 //   'localhost', which is used in the internal web browser).
-var artemisServerAddr = null;
 app.get('/connect/:server', function(req,res){
 	config.artemisServerAddr = req.params.server;
 	artemisNet.connect(config.artemisServerAddr, 10);
 	artemisNet.emit('shipSelect', {shipIndex:config.shipIndex});
-	grabStations();
+// 	grabStations();
 	res.end();
 });
 app.get('/disconnect', function(req,res){
@@ -124,8 +128,8 @@ app.get('/disconnect', function(req,res){
 	res.end();
 });
 app.get('/artemis-server', function(req,res){
-	if (artemisServerAddr) {
-		res.write(artemisServerAddr);
+	if (config.artemisServerAddr) {
+		res.write(config.artemisServerAddr);
 	}
 	res.end();
 });
@@ -162,22 +166,38 @@ app.get('/ship-select/:playerShipIndex', function(req,res){
 	res.end();
 });
 
+app.get('/unload-tube/:tube', function(req,res){
+	// This expects a tube from 1 to 6, but the server expects a tube from 0 to 5
+	artemisNet.emit('unloadTube', {tube:req.params.tube-1});
+	res.end();
+});
+app.get('/fire-tube/:tube', function(req,res){
+	// This expects a tube from 1 to 6, but the server expects a tube from 0 to 5
+	artemisNet.emit('fireTube', {tube:req.params.tube-1});
+	res.end();
+});
+app.get('/load-tube/:tube/:ordnance', function(req,res){
+	// This expects a tube from 1 to 6, but the server expects a tube from 0 to 5
+	artemisNet.emit('loadTube', {tube:req.params.tube-1, ordnance: req.params.ordnance});
+	res.end();
+});
+
 
 for (var i in process.argv) {
 	if (process.argv[i] == '--headless') {
-		headless = true;
+		config.headless = true;
 	}
 	if (process.argv[i] == '--server' && process.argv.length > i) {
-		autoConnect = process.argv[parseInt(i)+1];
-		console.log('Will autoconnect to server at ' + autoConnect);
+		config.artemisServerAddr = process.argv[parseInt(i)+1];
+		console.log('Will autoconnect to server at ' + config.artemisServerAddr);
 	}
 }
 
-if (autoConnect) {
-	artemisNet.connect(autoConnect,5);
+if (config.artemisServerAddr) {
+	artemisNet.connect(config.artemisServerAddr,5);
 }
 
 // Once everything's ready, try open the default browser with the main page.
-if (!headless) {
-	opener('http://localhost:' + tcpPort);
+if (!config.headless) {
+	opener('http://localhost:' + config.tcpPort);
 }

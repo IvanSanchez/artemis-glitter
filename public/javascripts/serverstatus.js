@@ -112,9 +112,16 @@ function refreshShipSelector(data) {
 };
 
 iface.on('allShipSettings', refreshShipSelector);
-iface.on('consoleStatus', function(){refreshShipSelector(model.allShipSettings)});
+iface.on('consoleStatus', function(){
+	refreshShipSelector(model.allShipSettings)
+});
 
-
+model.on('loaded',function(){
+	console.log('allShipSettings',model.allShipSettings);
+	if (model.allShipSettings) {
+		refreshShipSelector(model.allShipSettings);
+	}
+});
 
 document.getElementById('playershipname').addEventListener('change',function(e){
 	var shipIndex = document.getElementById('playershipname').value;

@@ -1,0 +1,33 @@
+<% include layout.ejs -%>
+<link rel='stylesheet' href='/stylesheets/tubes.css' />
+
+
+<table id='tubes'>
+
+<tr>         <td>      <th>TRP<th>NUK<th>MNE<th>EMP
+<!--
+<tr>         <td>STORE <td>0/0 <td>0/0 <td>0/0 <td>0/0
+<tr id=tube4><td>TUBE 4<td>LOAD<td>LOAD<td>LOAD<td>LOAD   
+-->
+
+<tr><td>STORE 
+    <td><span id='currentStores0'>0</span>/<span id='maxStores0'>x</span>
+    <td><span id='currentStores1'>0</span>/<span id='maxStores1'>x</span>
+    <td><span id='currentStores2'>0</span>/<span id='maxStores2'>x</span>
+    <td><span id='currentStores3'>0</span>/<span id='maxStores3'>x</span>
+
+<tr id=tube1><td>TUBE 1<td id=load10>   <td id=load11>   <td id=load12>   <td id=load13>   
+<tr id=tube2><td>TUBE 2<td id=load20>   <td id=load21>   <td id=load22>   <td id=load23>  
+<tr id=tube3><td>TUBE 3<td id=load30>   <td id=load31>   <td id=load32>   <td id=load33>  
+<tr id=tube4><td>TUBE 4<td id=load40>   <td id=load41>   <td id=load42>   <td id=load43> 
+<tr id=tube5><td>TUBE 5<td id=load50>   <td id=load51>   <td id=load52>   <td id=load53>
+<tr id=tube6><td>TUBE 6<td id=load60>   <td id=load61>   <td id=load62>   <td id=load63>
+
+</table>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/javascripts/worldmodel.js"></script>
+<script src="/javascripts/connectionlost.js"></script>
+<script src="/javascripts/redalert.js"></script>
+<script src="/javascripts/tubes.js"></script>

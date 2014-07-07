@@ -19,6 +19,17 @@ exports.unpack = function(data) {
 	
 	var bits = data.readBitArray(3);
 	
+	// tubeUsed is 0 if unloaded, 2 if loading, 1 if loaded, 3 if unloading.
+	// 0 -> 2 -> 1 -> 3 -> 0 (unloading)
+	// 0 -> 2 -> 1 -> 0 (firing)
+	
+	// Unknown1 depends on the ship being piloted:
+	//  41 (00101001) for scout
+	//  94 (01011110) for light cruiser
+	// 123 (01111011) for dreadnought
+	// 232 (11101000) for missile cruiser
+	//  95 (01011111) for battlecruiser
+	
 	// The bits are in big-endian, and the docs are in little-endian!
 	// This is why this seems backwards :-(
 	if (bits.get(7)) { unpacked.storesHoming  = data.readByte();}

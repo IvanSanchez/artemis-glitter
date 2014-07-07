@@ -185,16 +185,17 @@ function onPacket(buffer) {
 				
 				// Debug: log non-entity-update, non-usually-seen packets
 				if (header.type != 0x80803df9 &&
-					packetType != 'togglePause' &&
+// 					packetType != 'togglePause' &&
 					packetType != 'intel' &&
 					packetType != 'damcon' &&
 					packetType != 'beamFired' &&
+					packetType != 'allShipSettings' &&
 					packetType != 'consoleStatus' &&
 // 					packetType != 'gameRestart' &&
 					packetType != 'soundEffect' &&
-// 					packetType != 'commsIncoming' &&
+					packetType != 'commsIncoming' &&
 					packetType != 'playerShipDamage' &&
-					packetType != 'weaponsUpdate' &&
+// 					packetType != 'weaponsUpdate' &&
 					packetType != 'destroyObject') {
 					console.log(packetType, unpacked);
 				}
