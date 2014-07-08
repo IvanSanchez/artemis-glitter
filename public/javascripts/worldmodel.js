@@ -502,7 +502,7 @@ if (onBrowser) {
 		ifaces[dev].forEach(function(details){
 			if (details.family=='IPv4') {
 				if (details.address.toString().substr(0,3)!=="127") {
-					model.serverIPs.push('http://' + details.address + ':3000');
+					model.serverIPs.push('http://' + details.address + ':' + require('config').tcpPort);
 				}
 			}
 		});
