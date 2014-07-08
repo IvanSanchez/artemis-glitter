@@ -67,7 +67,7 @@ function getStyle(type,isEnemy,name) {
 		strokeColor = '#ffffff';	// Beam
 		fillColor   = '#666666';
 		radius = 1;
-	} else if (type==-2) {
+	} else if (type==-4) {
 		strokeColor = '#ffffff';	// cloakingFlash
 		fillColor   = '#ffffff';
 		radius = 2;
@@ -162,7 +162,7 @@ var map = new ol.Map({
   ],
   renderer: 'canvas',
   target: 'map',
-  view: new ol.View2D({
+  view: new ol.View({
     projection: artemisProjection,
     center: ol.extent.getCenter(artemisProjection.getExtent()),
     zoom: 1

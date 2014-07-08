@@ -2,7 +2,7 @@
 // Provides an update on the status of the player ship.
 
 
-exports.name = 'engineeringUpdate';
+exports.name = 'weaponsUpdate';
 
 exports.type = 0x80803df9;
 
@@ -18,6 +18,17 @@ exports.unpack = function(data) {
 	unpacked.id = data.readLong(0);
 	
 	var bits = data.readBitArray(3);
+	
+	// tubeUsed is 0 if unloaded, 2 if loading, 1 if loaded, 3 if unloading.
+	// 0 -> 2 -> 1 -> 3 -> 0 (unloading)
+	// 0 -> 2 -> 1 -> 0 (firing)
+	
+	// Unknown1 depends on the ship being piloted:
+	//  41 (00101001) for scout
+	//  94 (01011110) for light cruiser
+	// 123 (01111011) for dreadnought
+	// 232 (11101000) for missile cruiser
+	//  95 (01011111) for battlecruiser
 	
 	// The bits are in big-endian, and the docs are in little-endian!
 	// This is why this seems backwards :-(
@@ -48,17 +59,7 @@ exports.unpack = function(data) {
 	if (bits.get(17)) { unpacked.tubeContents6 = data.readByte(); }
 	if (bits.get(16)) { /* Unused */ }
 	
-	// Last byte of the bytefield seems to be unused.
-// 	if (bits.get(31)) { unpacked.heatBeams     = data.readLong(); }
-// 	if (bits.get(30)) { unpacked.heatTorpedoes = data.readByte(); }
-// 	if (bits.get(29)) { unpacked.heatSensors   = data.readFloat();}  
-// 	if (bits.get(28)) { unpacked.heatManeuver  = data.readByte(); }
-// 	if (bits.get(27)) { unpacked.heatImpulse   = data.readByte(); }
-// 	if (bits.get(26)) { unpacked.heatWarp      = data.readByte(); }
-// 	if (bits.get(25)) { unpacked.heatForShields= data.readLong(); }
-// 	if (bits.get(24)) { unpacked.heatAftShields= data.readLong(); }
-	
-	console.log('Weapons update: ',unpacked);	
+// 	console.log('Weapons update: ',unpacked);	
 	
 	return unpacked;
 }

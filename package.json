@@ -1,7 +1,7 @@
 {
     "name": "artemis-glitter"
   , "main": "server-page.html"
-  , "version": "0.2.1"
+  , "version": "0.3.0"
   , "private": true
   , "window": {
     "toolbar": false
@@ -12,12 +12,16 @@
       "grunt": "latest"
     , "grunt-node-webkit-builder": "latest"
     , "grunt-zip": "latest"
+    , "grunt-contrib-copy": "latest"
   }
   , "dependencies": {
       "express": "3.x"
     , "ejs": ">= 0.0.1"
     , "node-bitarray": ">= 0.0.2"
-    , "socket.io": ">= 0.9.16"
+    , "socket.io": ">= 1.0.6"
     , "opener": ">= 1.3.0"
+    , "config": "latest"
+    , "node-xml-lite": ">=0.0.3"
+    , "js-yaml": ">=3.0.0"
   }
 }
