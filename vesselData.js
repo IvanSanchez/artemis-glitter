@@ -2,18 +2,28 @@
 // Reads vesselData.xml and the *.snt files and stores its data structures in
 //   the module's exports
 
-var xml = require("node-xml-lite");
-var fs  = require('fs');
-var config = require('config');
+var xml    = require("node-xml-lite")
+  , fs     = require('fs')
+  , path   = require('path')
+  , config = require('config');
 
-console.log(config);
-
-/// TODO: Add config directory for vesselData.xml file
-
+var dir = config.datDir;
 var file;
 
+if (fs.existsSync(path.resolve(path.dirname(process.execPath),config.datDir) )) {
+    // Running from node-webkit
+    dir = path.resolve(path.dirname(process.execPath),config.datDir);
+
+} else if (fs.existsSync(path.resolve(path.dirname(module.uri),config.datDir) )) {
+    // Running from source
+    dir = path.resolve(path.dirname(module.uri),config.datDir);
+}
+// If none of those was true, then an absolute path was specified at config.datDir.
+
+console.log('Using vesselData.xml and *.snt from directory: ', dir);
+
 try {
-	file = fs.readFileSync(config.datDir + '/vesselData.xml');
+	file = fs.readFileSync(dir + '/vesselData.xml');
 } catch(e) {
 	console.warn('Could not find the file vesselData.xml !!!');
 	exports.vessels  = {};
@@ -48,7 +58,17 @@ var systemMap = {
 
 function readSnt(filename) {
 
-    var sntFile = fs.readFileSync(config.datDir + '/' + filename);
+    var sntFile;
+
+    try {
+        sntFile = fs.readFileSync(dir + '/' + filename);
+    } catch(e) {
+        console.warn('Could not find the file ' + filename + ' !!!');
+        exports.vessels  = {};
+        exports.factions = {};
+        return;
+    }
+
 
     var i = 0;
     var grid = {};

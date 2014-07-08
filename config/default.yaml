@@ -3,7 +3,7 @@
 tcpPort: 3000
 
 # Artemis server to connect to at start-up (IP address, hostname or FQDN)
-# The runtime config will overwrite this with the last server that Glitter connected to.
+# The runtime config should overwrite this with the last server that Glitter connected to.
 artemisServerAddr:
 
 

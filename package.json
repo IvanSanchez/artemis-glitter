@@ -1,7 +1,7 @@
 {
     "name": "artemis-glitter"
   , "main": "server-page.html"
-  , "version": "0.2.1"
+  , "version": "0.3.0"
   , "private": true
   , "window": {
     "toolbar": false
@@ -12,6 +12,7 @@
       "grunt": "latest"
     , "grunt-node-webkit-builder": "latest"
     , "grunt-zip": "latest"
+    , "grunt-contrib-copy": "latest"
   }
   , "dependencies": {
       "express": "3.x"

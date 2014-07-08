@@ -1,8 +1,45 @@
 
-/**
- * Module dependencies.
- */
+// Artemis-glitter. See README.md for details.
 
+
+
+// Set config directories first, so other modules can use the proper config.
+// Config directory is a problem when packaging with node-webkit, as the path
+//   where the node-webkit executable was launched is not the path where it
+//   is being run (it has been decompressed in some temporal location, etc)
+
+var path    = require('path')
+  , fs      = require('fs');
+
+// Set a default configuration directory if one does not exist.
+// process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || (path.dirname(module.uri) + '/config');
+
+if (fs.existsSync(path.dirname(process.execPath) + '/config/')) {
+    // Running from node-webkit
+    process.env.NODE_CONFIG_DIR = path.dirname(process.execPath) + '/config/';
+
+} else if (fs.existsSync(path.dirname(module.uri) + '/config/')) {
+    // Running from source
+    process.env.NODE_CONFIG_DIR = path.dirname(module.uri) + '/config/';
+}
+
+console.log('Module files are at ', path.dirname(module.uri));
+
+console.log('Executable files are at ', path.dirname(process.execPath));
+
+console.log('Using config file(s) at ', process.env.NODE_CONFIG_DIR);
+var config = require('config');
+// Contains:
+// config.tcpPort
+// config.artemisServerAddr
+// config.shipIndex
+// config.headless
+// config.datDir
+
+
+
+
+// Module dependencies.
 var express = require('express')
   , opener  = require('opener')
   , path    = require('path')
@@ -12,15 +49,6 @@ var express = require('express')
 
 var app = module.exports = express();
 
-// Set a default configuration directory if one does not exist.
-process.env.NODE_CONFIG_DIR = process.env.NODE_CONFIG_DIR || (path.dirname(module.uri) + '/config');
-
-var config = require('config');
-// Contains:
-// config.tcpPort
-// config.artemisServerAddr
-// config.shipIndex
-// config.headless
 
 
 
