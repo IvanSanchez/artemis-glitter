@@ -8,14 +8,14 @@
 var model = {
 	connected: false,
 	serverVersion: {major:null,minor:null,patch:null},
-	
+
 	// Holds all known data for all known entities.
 	// The key of each one is the numeric ID of the entity.
 	entities: {},
 	comms: {},
 	incomingAudio: {},
 	intel: {},
-	
+
 	playerShipID: null,	// Tipically around 1010 or so.
 	playerShipIndex: null,	// From 0 to 7
 	playerShipType: null,   // Typically from 0 to 4, refers to vesseldata.
@@ -24,16 +24,16 @@ var model = {
 	allShipSettings: [],	// Used only during pre-game during ship selection screen
 	gameStarted: false,
 	gamePaused: 0,	// 0 means playing, 1 means pausing, 2 means paused.
-	
+
 	damconNodes:{},
 	damconTeams:{},
-	
+
 	skybox: null,
 	difficulty: null,
-	
+
 	serverIPs: [],
 	serverVersion: [],
-	
+
 	vesselData: {},
 	factionData: {},
 
@@ -70,9 +70,9 @@ model.off = function(eventType, fn) {
 //   provide some extra event handlers
 
 // Aux function to fire all event handlers of the given event.
-// The event handler will be passed 'data', a generic object 
+// The event handler will be passed 'data', a generic object
 //   containing the human-readable contents of the packet.
-// In the special case of the 'packet' event, a 'packetType' 
+// In the special case of the 'packet' event, a 'packetType'
 //   is added to the struct.
 model.emit = function (eventType, data) {
 	for (var i in model.eventHandlers[eventType]) {
@@ -91,9 +91,9 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 	iface = require('../../artemisNet');
 	model.vesselData  = require('../../vesselData').vessels;
 	model.factionData = require('../../vesselData').factions;
-	
+
 // 	console.log(model.vesselData);
-	
+
 	onBrowser = false;
 } else {
 	iface = io.connect();
@@ -114,7 +114,7 @@ iface.on('connected', function(){
 
 iface.on('disconnected', function(){
 	model.connected = false;
-    model.emit('gameOver');
+	model.emit('gameOver');
 });
 
 iface.on('version', function(data){
@@ -150,41 +150,41 @@ iface.on('gameRestart', function(){
 function updateEntity(data, type){
 	if (!data) {return;}
 // 	console.log(data);
-	
+
 	if (!model.entities.hasOwnProperty(data.id)) {
 		model.entities[data.id] = data;
 		model.entities[data.id].entityType = type;
 		model.emit('newEntity', data);
-		
+
 // 		console.log('New contact: ', data.id, type, data.shipName);
 	} else {
 		for (var key in data) {
-			/// TODO: Log to console if some unknown value changes, 
+			/// TODO: Log to console if some unknown value changes,
 			///   to help identify more fields.
 			model.entities[data.id][key] = data[key];
 		}
 		model.emit('updateEntity', model.entities[data.id]);
 	}
 	model.entities[data.id].timestampUpdated = (new Date()).getTime();
-	
+
 	model.emit('newOrUpdateEntity', model.entities[data.id]);
 };
 
 iface.on('playerUpdate', function (data) {
 	// Update playerShipID if data matches with playerShipIndex
 	if (data.shipNumber == model.playerShipIndex+1) {
-        if (!model.playerShipID) {
-            model.playerShipID = data.id;
-            updateEntity(data, 1);
-            model.emit('ownShipInit',  model.entities[data.id].shipType);
-            model.emit('ownShipUpdate',model.entities[data.id]);
-            return;
-        } else {
-            model.playerShipID = data.id;
-            updateEntity(data, 1);
-            model.emit('ownShipUpdate',model.entities[data.id]);
-            return;
-        }
+		if (!model.playerShipID) {
+			model.playerShipID = data.id;
+			updateEntity(data, 1);
+			model.emit('ownShipInit',  model.entities[data.id].shipType);
+			model.emit('ownShipUpdate',model.entities[data.id]);
+			return;
+		} else {
+			model.playerShipID = data.id;
+			updateEntity(data, 1);
+			model.emit('ownShipUpdate',model.entities[data.id]);
+			return;
+		}
 	}
 
 	// Entity type 1 = Player ship
@@ -283,7 +283,7 @@ iface.on('commsIncoming', function (data) {
 		console.log('Malformed message string in comms! :', data.msg);
 		data.msg = data.msg.split('\u0000')[0];
 	}
-	
+
 	model.comms[commsCounter].timestampUpdated = (new Date()).getTime();
 	commsCounter++;
 });
@@ -300,7 +300,7 @@ iface.on('destroyObject', function (data) {
 iface.on('consoleStatus', function(data){
 	// The index received here is 1-based, whereas everywhere else is 0-based
 	model.playerShipIndex = data.playerShip - 1;
-	
+
 // 	console.log('Received: ', data.playerShip, ', set: ', model.playerShipIndex);
 });
 
@@ -333,7 +333,7 @@ iface.on('version', function (data) {
 
 
 iface.on('damcon', function (data) {
-	
+
 	for (var i in data.nodes) {
 		var node = data.nodes[i];
 		if (!model.damconNodes.hasOwnProperty(node.x)) {
@@ -344,9 +344,9 @@ iface.on('damcon', function (data) {
 		}
 		model.damconNodes[node.x][node.y][node.z] = node.damage;
 	}
-	
+
 	for (var i in data.teams) {
-		
+
 		model.damconTeams[data.teams[i].teamID] = data.teams[i];
 	}
 });
@@ -363,11 +363,11 @@ iface.on('incomingAudio', function (data) {
 
 
 
-// Given a pair of coords, heading (in radians), speed, and last 
+// Given a pair of coords, heading (in radians), speed, and last
 //   known time, extrapolate a new position.
 // This assumes that the timestamp of the last known time includes
 //   coordinates and speed.
-// Also, this assumes a flat world model. I'm not dealing with 3D 
+// Also, this assumes a flat world model. I'm not dealing with 3D
 //   just yet.
 // I wonder why the coordinate system is X-Z based instead of X-Y based.
 // TODO: Add rate-of-turn to the mix.
@@ -377,17 +377,17 @@ function extrapolatePosition(x,z,hdg,spd,timestamp) {
 		var now = (new Date()).getTime();
 		diff = now - timestamp;	// In milliseconds
 	}
-	
+
 	// Based on my back-of-the-envelope calculations, a vessel
 	//   travelling at a velocity of 0.3 actually means about
 	//   18.5 meters/sec.
 	// So, a velocity of 1 should mean 61.7 meters per second,
 	//   or 0.0617 meters per millisecond.
 	var offset = 0.0617 * diff * spd;
-	
+
 	var newX = x + (offset * Math.sin(hdg));
 	var newZ = z + (offset * Math.cos(hdg));
-	
+
 	return ([newX, newZ]);
 }
 
@@ -428,13 +428,13 @@ if (onBrowser) {
 			model.emit('ownShipInit', model.entities[model.playerShipID].shipType);
 			model.emit('ownShipUpdate', model.entities[model.playerShipID]);
 		}
-		
+
 		model.emit('allShipSettings',model.allShipSettings);
 // 		iface.emit('weaponsUpdate'  ,model.weapons);
 		// Some socket-io hackish tricks to fire some fake events
 // 		for (var i in iface.$events.allShipSettings) {
 // 		}
-		
+
 		model.emit('loaded',model);
 
 		if (model.gameStarted) {
@@ -454,24 +454,24 @@ if (onBrowser) {
 	oReq.onload = receiveModel;
 	oReq.open("get", "./model", true);
 	oReq.send();
-	
+
 
 	// Automatically extrapolate vessel positions, for vessels
-	//   with a non-zero speed which haven't moved for the 
+	//   with a non-zero speed which haven't moved for the
 	//   last 10 seconds.
 	/// FIXME: This doesn't take into account pausing the server!!!
 	var extrapolationTime = 10000;
 	setInterval(function(){
-		
+
 		var now = (new Date()).getTime();
 
-		
+
 		for (i in model.entities) {
 			var entity = model.entities[i];
-			
-			if (entity.velocity && 
-			    (now - entity.timestampUpdated > extrapolationTime)) {
-				
+
+			if (entity.velocity &&
+				(now - entity.timestampUpdated > extrapolationTime)) {
+
 				var newCoords = extrapolatePosition(
 					entity.posX,
 					entity.posZ,
@@ -484,10 +484,10 @@ if (onBrowser) {
 				model.emit('updateEntity', model.entities[i]);
 				model.emit('newOrUpdateEntity', model.entities[i]);
 			}
-		} 
-		
+		}
+
 	}, extrapolationTime);
-		
+
 } else {
 	// Runnint on node.js
 	exports.model = model;
@@ -507,27 +507,36 @@ if (onBrowser) {
 			}
 		});
 	}
-	
-	
+
+
+	var broadcasted = false;
 	function broadcastGlitterAddress() {
-	  
+		if (broadcasted) {
+			return;
+		}
+
 // 		////  FIXME!!!!!!
 		if (!model.entities.hasOwnProperty(model.playerShipID)) {
 			console.log('broadcastGlitterAddress: Player ship not in world model yet');
 			setTimeout(broadcastGlitterAddress, 5000);
 			return;
 		}
-	  
-		var vesselName = model.entities[model.playerShipID].shipName;	  
+
+		var vesselName = model.entities[model.playerShipID].shipName;
 		iface.emit('gameMasterMessage', {
 			origin: 'Glitter',
-			body: 'The vessel ' + vesselName + 
-				' is running Glitter. Use a web browser to visit ' + 
+			body: 'The vessel ' + vesselName +
+				' is running Glitter. Use a web browser to visit ' +
 				model.serverIPs.join(', ') + ' and access extra consoles.'
-		});  
+		});
+		broadcasted = true;
 	}
-	
-	iface.on('gameRestart', broadcastGlitterAddress, 5000);
+
+	iface.on('gameRestart', broadcastGlitterAddress);
+
+	iface.on('gameOver', function(){
+		broadcasted = false;
+	});
 }
 
 
