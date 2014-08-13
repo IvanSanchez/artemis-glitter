@@ -7,23 +7,46 @@ var xml    = require("node-xml-lite")
   , path   = require('path')
   , config = require('config');
 
-var dir = config.datDir;
+var datDir = config.datDir;
 var file;
 
-if (fs.existsSync(path.resolve(path.dirname(process.execPath),config.datDir) )) {
-    // Running from node-webkit
-    dir = path.resolve(path.dirname(process.execPath),config.datDir);
 
-} else if (fs.existsSync(path.resolve(path.dirname(module.uri),config.datDir) )) {
-    // Running from source
-    dir = path.resolve(path.dirname(module.uri),config.datDir);
+
+// Sorry for the ugly code for detecting the right directory. The
+//   try-catches have to be there in case a sandboxed environment throws out
+//   an error. I'd be happy to see suggestions for a cleaner solution.
+var vesselDataFileFound = false;
+
+// Check if the vesselData.xml file exists, update the global vars if so.
+function lookForVesselDataFile(dir) {
+    if (vesselDataFileFound) {
+        return false;
+    }
+    console.log('Looking for vesselData.xml file in', dir);
+    if (fs.existsSync(path.resolve(dir,config.datDir,'vesselData.xml'))) {
+        console.log('Found a vesselData.xml file!');
+        vesselDataFileFound = true;
+        return datDir = path.resolve(dir,config.datDir);
+    } else {
+        return false;
+    }
 }
-// If none of those was true, then an absolute path was specified at config.datDir.
 
-console.log('Using vesselData.xml and *.snt from directory: ', dir);
+lookForVesselDataFile();
+
+try { lookForVesselDataFile(process.execPath); } catch(e) {}
+try { lookForVesselDataFile(module.uri);       } catch(e) {}
+try { lookForVesselDataFile(process.env.PWD);  } catch(e) {}
+try { lookForVesselDataFile(process.cwd());    } catch(e) {}
+try {
+    var gui = require('nw.gui');
+    lookForVesselDataFile(gui.App.DataPath);
+} catch(e) {}
+
+console.log('Using vesselData.xml and *.snt from directory: ', datDir);
 
 try {
-	file = fs.readFileSync(dir + '/vesselData.xml');
+    file = fs.readFileSync(path.resolve(datDir,'vesselData.xml'));
 } catch(e) {
 	console.warn('Could not find the file vesselData.xml !!!');
 	exports.vessels  = {};

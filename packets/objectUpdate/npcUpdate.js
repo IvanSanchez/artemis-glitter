@@ -36,7 +36,7 @@ exports.unpack = function(data) {
 	if (bits.get(11)) { unpacked.heading        = data.readFloat();}
 	if (bits.get(10)) { unpacked.velocity       = data.readFloat();}
 	if (bits.get(9))  { unpacked.surrendered    = data.readByte(); }
-	if (bits.get(8))  { unpacked.unknown4       = data.readShort();}
+	if (bits.get(8))  { unpacked.unknown4       = data.readShort();} // Maybe surrender chance??
 	
 	if (bits.get(23)) { unpacked.forShields     = data.readFloat();}
 	if (bits.get(22)) { unpacked.forShieldsMax  = data.readFloat();}
