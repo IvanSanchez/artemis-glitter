@@ -22,6 +22,9 @@ function lookForVesselDataFile(dir) {
     if (vesselDataFileFound) {
         return false;
     }
+    if (dir === undefined) {
+				return false;
+		}
     console.log('Looking for vesselData.xml file in', dir);
     if (fs.existsSync(path.resolve(dir,config.datDir,'vesselData.xml'))) {
         console.log('Found a vesselData.xml file!');
