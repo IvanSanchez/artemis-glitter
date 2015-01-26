@@ -202,6 +202,7 @@ function onPacket(buffer) {
 				
 			} catch(e) {
 				console.error('Aaaaiiieeeee, something went wrong while parsing a packet of type ' + packetType + '!');
+				console.error(e);
 				var str = '';
 				for (var i = 0; i<header.packetLength && i<data.buffer.length; i++) {
 					var hex = data.buffer.readUInt8(i).toString(16);

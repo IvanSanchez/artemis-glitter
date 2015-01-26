@@ -6,7 +6,7 @@ exports.name = 'nebulaUpdate';
 
 exports.type = 0x80803df9;
 
-exports.subtype = 0x09;
+exports.subtype = 0x0a;
 exports.subtypeLength = 1;	// 1 byte -> UInt8
 
 exports.pack = null;	// Only from server to client

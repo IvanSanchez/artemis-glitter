@@ -6,7 +6,7 @@ exports.name = 'droneUpdate';
 
 exports.type = 0x80803df9;
 
-exports.subtype = 0x10;
+exports.subtype = 0x11;
 exports.subtypeLength = 1;	// 1 byte -> UInt8
 
 exports.pack = null;	// Only from server to client
@@ -35,7 +35,7 @@ exports.unpack = function(data) {
 	if (bits.get(1)) { unpacked.heading        = data.readFloat();}
 	if (bits.get(0)) { unpacked.unknown4       = data.readLong(); }	// Looks like some kind of flags?
 	
-	if (bits.get(15)) { /* Unused */ }
+	if (bits.get(15)) { unpacked.unknown5      = data.readFloat(); }
 	if (bits.get(14)) { /* Unused */ }
 	if (bits.get(13)) { /* Unused */ }
 	if (bits.get(12)) { /* Unused */ }
