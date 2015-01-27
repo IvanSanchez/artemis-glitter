@@ -6,7 +6,7 @@ exports.name = 'monsterUpdate';
 
 exports.type = 0x80803df9;
 
-exports.subtype = 0x0e;
+exports.subtype = 0x0f;
 exports.subtypeLength = 1;	// 1 byte -> UInt8
 
 exports.pack = null;	// Only from server to client
@@ -28,7 +28,6 @@ exports.unpack = function(data) {
 	if (bits.get(2)) { unpacked.unknown2       = data.readFloat();}
 	if (bits.get(1)) { unpacked.unknown3       = data.readLong(); }
 	if (bits.get(0)) { unpacked.unknown4       = data.readLong(); }
-	
 	
 	return unpacked;
 }

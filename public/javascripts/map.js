@@ -5,18 +5,21 @@
 //     0x01: player ship
 //     0x02: weapons bridge station
 //     0x03: engineering bridge station
-//     0x04: other ship (enemy or civilian)
-//     0x05: space station
-//     0x06: mine
-//     0x07: anomaly
-//     0x09: nebula
-//     0x0a: torpedo
-//     0x0b: black hole
-//     0x0c: asteroid
-//     0x0d: generic mesh
-//     0x0e: monster
-//     0x0f: whale
-//     0x10: drone
+//     0x04: ????
+//     0x05: other ship (enemy or civilian)
+//     0x06: space station
+//     0x07: mine
+//     0x08: anomaly
+
+//     0x0a: ??? nebula
+//     0x0b: ??? torpedo
+
+//     0x0c: black hole
+//     0x0d: asteroid
+//     0x0e: ??? generic mesh
+//     0x0f: ??? monster
+//     0x10: ??? whale
+//     0x11: ??? drone
 
 
 
@@ -31,7 +34,7 @@ function getStyle(type,isEnemy,name) {
 	if (type==1) {
 		strokeColor = '#00ff00';
 		fillColor   = '#40c040';
-	} else if (type==4) {
+	} else if (type==5) {
 		if (isEnemy) {
 			strokeColor = '#ff0000';
 			fillColor   = '#c04040';
@@ -39,28 +42,31 @@ function getStyle(type,isEnemy,name) {
 			strokeColor = '#00ffff';
 			fillColor   = '#40c0c0';
 		}
-	} else if (type==5) {
+	} else if (type==6) {
 		strokeColor = '#ffff00';	// Stations
 		fillColor   = '#c0c040';
-	} else if (type==6) {
+	} else if (type==7) {
 		strokeColor = '#ffffff';	// Mines
 		fillColor   = '#666666';
 		radius = 2;
-	} else if (type==9) {
+	} else if (type==10) {
 		strokeColor = [0xff,0x00,0xff,.05];	// Nebulae
 		fillColor   = [0xc0,0x40,0xc0,.2];
 		radius = 15;
-	} else if (type==11) {
+	} else if (type==12) {
 		strokeColor = '#404040';	// Black hole
 		fillColor   = '#000000';
 		radius = 15;
-	} else if (type==12) {
+	} else if (type==13) {
 		strokeColor = '#ffbf80';	// Asteroid
 		fillColor   = '#c06640';
 	} else if (type==15) {
+		strokeColor = '#ff80ff';	// Space Monster
+		fillColor   = '#804080';
+	} else if (type==16) {
 		strokeColor = '#00ff80';	// Space Whales
 		fillColor   = '#40c080';
-	} else if (type==16) {
+	} else if (type==17) {
 		strokeColor = '#ffffff';	// Drone
 		fillColor   = '#666666';
 	} else if (type==-1) {

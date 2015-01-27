@@ -6,7 +6,7 @@ exports.name = 'asteroidUpdate';
 
 exports.type = 0x80803df9;
 
-exports.subtype = 0x0c;
+exports.subtype = 0x0d;
 exports.subtypeLength = 1;	// 1 byte -> UInt8
 
 exports.pack = null;	// Only from server to client

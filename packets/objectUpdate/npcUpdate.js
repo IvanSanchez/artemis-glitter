@@ -1,12 +1,11 @@
 
 // Provides an update on the status of any other ship.
 
-
 exports.name = 'npcUpdate';
 
 exports.type = 0x80803df9;
 
-exports.subtype = 0x04;
+exports.subtype = 0x05;
 exports.subtypeLength = 1;	// 1 byte -> UInt8
 
 exports.pack = null;	// Only from server to client
@@ -54,7 +53,7 @@ exports.unpack = function(data) {
 	if (bits.get(27)) { unpacked.unknown9       = data.readByte(); }
 	if (bits.get(26)) { unpacked.unknown10      = data.readByte(); }
 	if (bits.get(25)) { unpacked.unknown11      = data.readByte(); }
-	if (bits.get(24)) { unpacked.unknown12      = data.readFloat();}
+	if (bits.get(24)) { unpacked.unknown12      = data.readFloat();}	// - 10000 ??
 	
 	if (bits.get(39)) { unpacked.unknown13      = data.readLong(); }
 	if (bits.get(38)) { unpacked.unknown14      = data.readLong(); }

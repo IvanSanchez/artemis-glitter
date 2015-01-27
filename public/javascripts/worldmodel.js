@@ -192,58 +192,58 @@ iface.on('playerUpdate', function (data) {
 });
 
 iface.on('npcUpdate', function (data) {
-	// Entity type 4 = NPC
-	updateEntity(data, 4);
-});
-
-iface.on('stationUpdate', function (data) {
-	// Entity type 5 = Deep Space Station
+	// Entity type 5 = NPC
 	updateEntity(data, 5);
 });
 
-iface.on('mineUpdate', function (data) {
-	// Entity type 6 = Mine
+iface.on('stationUpdate', function (data) {
+	// Entity type 6 = Deep Space Station
 	updateEntity(data, 6);
 });
 
-iface.on('anomalyUpdate', function (data) {
-	// Entity type 7 = Anomaly
+iface.on('mineUpdate', function (data) {
+	// Entity type 7 = Mine
 	updateEntity(data, 7);
 });
 
-iface.on('nebulaUpdate', function (data) {
-	// Entity type 9 = Nebula
-	updateEntity(data, 9);
+iface.on('anomalyUpdate', function (data) {
+	// Entity type 8 = Anomaly
+	updateEntity(data, 8);
 });
 
-iface.on('torpedoUpdate', function (data) {
-	// Entity type 10 = Torpedo
+iface.on('nebulaUpdate', function (data) {
+	// Entity type 10 = Nebula
 	updateEntity(data, 10);
 });
 
-iface.on('blackHoleUpdate', function (data) {
-	// Entity type 11 = Black Hole
+iface.on('torpedoUpdate', function (data) {
+	// Entity type 11 = Torpedo
 	updateEntity(data, 11);
 });
 
-iface.on('asteroidUpdate', function (data) {
-	// Entity type 12 = Asteroid
+iface.on('blackHoleUpdate', function (data) {
+	// Entity type 12 = Black Hole
 	updateEntity(data, 12);
 });
 
-iface.on('monsterUpdate', function (data) {
-	// Entity type 14 = Monster
-	updateEntity(data, 14);
+iface.on('asteroidUpdate', function (data) {
+	// Entity type 13 = Asteroid
+	updateEntity(data, 13);
 });
 
-iface.on('whaleUpdate', function (data) {
-	// Entity type 15 = Space Whales
+iface.on('monsterUpdate', function (data) {
+	// Entity type 15 = Monster
 	updateEntity(data, 15);
 });
 
-iface.on('droneUpdate', function (data) {
-	// Entity type 16 = Drones
+iface.on('whaleUpdate', function (data) {
+	// Entity type 16 = Space Whales
 	updateEntity(data, 16);
+});
+
+iface.on('droneUpdate', function (data) {
+	// Entity type 17 = Drones
+	updateEntity(data, 17);
 });
 
 iface.on('beamFired', function (data) {

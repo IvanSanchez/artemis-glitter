@@ -21,7 +21,7 @@ exports.unpack = function(data) {
 		var minor = data.readLong();
 		var patch = data.readLong();
 
-		if (major == 2 && minor == 1 && patch >= 1) {
+		if (major == 2 && minor == 1 && patch >= 5) {
 			console.log('Cool, we have connected to a supported version of Artemis!');
 		} else {
 			console.warn('Unsupported version of Artemis!!!');
