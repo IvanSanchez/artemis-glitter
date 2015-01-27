@@ -60,6 +60,9 @@ function getStyle(type,isEnemy,name) {
 	} else if (type==13) {
 		strokeColor = '#ffbf80';	// Asteroid
 		fillColor   = '#c06640';
+	} else if (type==15) {
+		strokeColor = '#ff80ff';	// Space Monster
+		fillColor   = '#804080';
 	} else if (type==16) {
 		strokeColor = '#00ff80';	// Space Whales
 		fillColor   = '#40c080';
