@@ -18,3 +18,4 @@ build/*
 dat/*
 config/runtime.json
 *~
+cache

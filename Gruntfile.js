@@ -10,10 +10,12 @@ module.exports = function(grunt) {
   grunt.initConfig({
     nodewebkit: {
       options: {
-        build_dir: './build', // Where the build version of my node-webkit app is saved
+        buildDir: './build', // Where the build version of my node-webkit app is saved
         // Build all platforms we can
-        mac: true,
-        win: true,
+        osx32: true,
+        osx64: true,
+        win32: true,
+        win64: true,
         linux32: true,
         linux64: true,
 
@@ -30,53 +32,75 @@ module.exports = function(grunt) {
     copy: {
         main: {
             files: [
-            {expand: true, src: common_files, dest: 'build/releases/' + app_name + '/mac/' + app_name + '.app/', filter: 'isFile'},
-            {expand: true, src: common_files, dest: 'build/releases/' + app_name + '/win/' + app_name + '/', filter: 'isFile'},
-            {expand: true, src: common_files, dest: 'build/releases/' + app_name + '/linux32/' + app_name + '/', filter: 'isFile'},
-            {expand: true, src: common_files, dest: 'build/releases/' + app_name + '/linux64/' + app_name + '/', filter: 'isFile'},
+            {expand: true, src: common_files, dest: 'build/' + app_name + '/osx32/' + '.app/', filter: 'isFile'},
+            {expand: true, src: common_files, dest: 'build/' + app_name + '/osx64/' + '.app/', filter: 'isFile'},
+            {expand: true, src: common_files, dest: 'build/' + app_name + '/win32/' + '/', filter: 'isFile'},
+            {expand: true, src: common_files, dest: 'build/' + app_name + '/win64/' + '/', filter: 'isFile'},
+            {expand: true, src: common_files, dest: 'build/' + app_name + '/linux32/' + '/', filter: 'isFile'},
+            {expand: true, src: common_files, dest: 'build/' + app_name + '/linux64/' + '/', filter: 'isFile'},
             ]
         }
     },
     zip: {
-        'mac': {
-            cwd: 'build/releases/' + app_name + '/mac/',
+        'osx32': {
+            cwd: 'build/' + app_name + '/osx32/',
             src: [
-                 'build/releases/' + app_name + '/mac/' + app_name + '.app/**/*'
-                ,'build/releases/' + app_name + '/mac/' + app_name + '.app/LICENSE'
-                ,'build/releases/' + app_name + '/mac/' + app_name + '.app/README.md'
-                ,'build/releases/' + app_name + '/mac/' + app_name + '.app/config/default.yaml'
+                 'build/' + app_name + '/osx32/' + app_name + '.app/**/*'
+                ,'build/' + app_name + '/osx32/' + app_name + '.app/LICENSE'
+                ,'build/' + app_name + '/osx32/' + app_name + '.app/README.md'
+                ,'build/' + app_name + '/osx32/' + app_name + '.app/config/default.yaml'
             ],
-            dest: 'build/releases/' + app_name + '/' + app_name + '-mac.zip'
+            dest: 'build/' + app_name + '/' + app_name + '-osx32.zip'
         },
-        'win': {
-            cwd: 'build/releases/' + app_name + '/win/',
+        'osx64': {
+            cwd: 'build/' + app_name + '/osx64/',
             src: [
-                 'build/releases/' + app_name + '/win/' + app_name + '/**/*'
-                ,'build/releases/' + app_name + '/win/' + app_name + '/LICENSE'
-                ,'build/releases/' + app_name + '/win/' + app_name + '/README.md'
-                ,'build/releases/' + app_name + '/win/' + app_name + '/config/default.yaml'
+                 'build/' + app_name + '/osx64/' + app_name + '.app/**/*'
+                ,'build/' + app_name + '/osx64/' + app_name + '.app/LICENSE'
+                ,'build/' + app_name + '/osx64/' + app_name + '.app/README.md'
+                ,'build/' + app_name + '/osx64/' + app_name + '.app/config/default.yaml'
             ],
-            dest: 'build/releases/' + app_name + '/' + app_name + '-win.zip'
+            dest: 'build/' + app_name + '/' + app_name + '-osx64.zip'
+        },
+        'win32': {
+            cwd: 'build/' + app_name + '/win32/',
+            src: [
+                 'build/' + app_name + '/win32/' + '/**/*'
+                ,'build/' + app_name + '/win32/' + '/LICENSE'
+                ,'build/' + app_name + '/win32/' + '/README.md'
+                ,'build/' + app_name + '/win32/' + '/config/default.yaml'
+            ],
+            dest: 'build/' + app_name + '/' + app_name + '-win32.zip'
+        },
+        'win64': {
+            cwd: 'build/' + app_name + '/win64/',
+            src: [
+                 'build/' + app_name + '/win64/' + '/**/*'
+                ,'build/' + app_name + '/win64/' + '/LICENSE'
+                ,'build/' + app_name + '/win64/' + '/README.md'
+                ,'build/' + app_name + '/win64/' + '/config/default.yaml'
+            ],
+            dest: 'build/' + app_name + '/' + app_name + '-win64.zip'
         },
         'linux32': {
-            cwd: 'build/releases/' + app_name + '/linux32/',
+            cwd: 'build/' + app_name + '/linux32/',
             src: [
-                 'build/releases/' + app_name + '/linux32/' + app_name + '/**/*'
-                ,'build/releases/' + app_name + '/linux32/' + app_name + '/LICENSE'
-                ,'build/releases/' + app_name + '/linux32/' + app_name + '/README.md'
-                ,'build/releases/' + app_name + '/linux32/' + app_name + '/config/default.yaml'
+                 'build/' + app_name + '/linux32/' + '/**/*'
+                ,'build/' + app_name + '/linux32/' + '/LICENSE'
+                ,'build/' + app_name + '/linux32/' + '/README.md'
+                ,'build/' + app_name + '/linux32/' + '/config/default.yaml'
             ],
-            dest: 'build/releases/' + app_name + '/' + app_name + '-linux32.zip'
+            dest: 'build/' + app_name + '/' + app_name + '-linux32.zip'
         },
         'linux64': {
-            cwd: 'build/releases/' + app_name + '/linux64/',
+            cwd: 'build/' + app_name + '/linux64/',
             src: [
-                 'build/releases/' + app_name + '/linux64/' + app_name + '/**/*'
-                ,'build/releases/' + app_name + '/linux64/' + app_name + '/LICENSE'
-                ,'build/releases/' + app_name + '/linux64/' + app_name + '/README.md'
-                ,'build/releases/' + app_name + '/linux64/' + app_name + '/config/default.yaml'
+                 'build/' + app_name + '/linux64/' + '/**/*'
+                ,'build/' + app_name + '/linux64/' + '/LICENSE'
+                ,'build/' + app_name + '/linux64/' + '/README.md'
+                ,'build/' + app_name + '/linux64/' + '/config/default.yaml'
             ],
-            dest: 'build/releases/' + app_name + '/' + app_name + '-linux64.zip'
+            dest: 'build/' + app_name + '/' + app_name + '-linux64.zip'
         },
     }
   });
