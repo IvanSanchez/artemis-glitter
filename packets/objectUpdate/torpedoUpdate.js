@@ -5,8 +5,7 @@ exports.name = 'torpedoUpdate';
 
 exports.type = 0x80803df9;
 
-// exports.subtype = 0x0b;
-exports.subtype = 0xfb;
+exports.subtype = 0x0b;
 exports.subtypeLength = 1;	// 1 byte -> UInt8
 
 exports.pack = null;	// Only from server to client
