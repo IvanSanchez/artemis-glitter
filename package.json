@@ -1,27 +1,25 @@
 {
-    "name": "artemis-glitter"
-  , "main": "server-page.html"
-  , "version": "0.4.0"
-  , "private": true
-  , "window": {
-    "toolbar": false
-    , "width": 800
-    , "height": 600
-  }
-  , "devDependencies": {
-      "grunt": "latest"
-    , "grunt-node-webkit-builder": "latest"
-    , "grunt-zip": "latest"
-    , "grunt-contrib-copy": "latest"
-  }
-  , "dependencies": {
-      "express": "3.x"
-    , "ejs": ">= 0.0.1"
-    , "node-bitarray": ">= 0.0.2"
-    , "socket.io": ">= 1.0.6"
-    , "opener": ">= 1.3.0"
-    , "config": "latest"
-    , "node-xml-lite": ">=0.0.3"
-    , "js-yaml": ">=3.0.0"
+  "name": "artemis-glitter",
+  "version": "0.5.0-wip",
+  "description": "Unofficial client and proxy for Artemis Space Bridge Simulator",
+  "main": "index.js",
+  "scripts": {
+    "start": "./node_modules/.bin/brunch watch"
+  },
+  "author": "Iván Sánchez Ortega <ivan@sanchezortega.es>",
+  "license": "Beerware",
+  "dependencies": {
+    "config": "^1.10.0",
+    "express": "^4.11.1",
+    "js-yaml": "^3.2.5",
+    "socket.io": "^1.3.2"
+  },
+  "devDependencies": {
+    "auto-reload-brunch": "^1.7.6",
+    "bower": "^1.3.12",
+    "brunch": "^1.7.20",
+    "jade-brunch": "^1.8.1",
+    "javascript-brunch": "^1.7.1",
+    "stylus-brunch": "^1.8.1"
   }
 }

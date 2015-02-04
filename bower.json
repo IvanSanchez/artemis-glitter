@@ -1,0 +1,26 @@
+{
+  "name": "artemis-glitter",
+  "main": "index.js",
+  "version": "0.0.0",
+  "authors": [
+    "Iván Sánchez Ortega <ivan@sanchezortega.es>"
+  ],
+  "description": "Unofficial client and proxy for Artemis Space Bridge Simulator",
+  "license": "Beerware",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "auto-reload-brunch": "~1.7.6"
+  },
+  "overrides": {
+    "jade": {
+      "main": "runtime.js"
+    }
+  }
+}

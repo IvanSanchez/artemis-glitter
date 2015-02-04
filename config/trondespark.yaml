@@ -4,8 +4,9 @@ tcpPort: 3333
 
 # Artemis server to connect to at start-up (IP address, hostname or FQDN)
 # The runtime config should overwrite this with the last server that Glitter connected to.
+#artemisServerAddr:
 artemisServer:
-  host: 
+  host: localhost
   port: 2010
 
   
@@ -14,13 +15,13 @@ warServer:
   port: 3000
   
 
-# Ship index to request stations at (from 1 to 8)
+# Ship index to request stations at (from 0 to 7)
 # The runtime config will overwrite this with the last ship that Glitter selected from the last server.
 playerShipIndex: 1
 
 
 # Set to true to skip the launch of a web browser to the default webpage at start-up.
-headless: false
+headless: true
 
 
 # Location of the vesselData.xml and the *.snt files. By default, relative to
