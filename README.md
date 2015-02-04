@@ -32,39 +32,46 @@ The name is appropiate for blinky things that you put on top of something, and u
 Current features
 --------------------
 
-* Connects properly to an Artemis server and understands most of the information sent by it.
-* Supports Artemis 2.1.1 **only**. Will not work with previous versions.
-* Implements a more-or-less complete world model.
-* Provides a web front-end with:
-  * Debug map able to display the entire world model
-  * A "bearing-distance table" console, showing BRG, DST and HDG of nearest vessels/stations. Looks like a non-user-friendly grid of callsigns of numbers.
-  * A "proximity monitor" console, showing distances to the nearest asteriod/enemy/nebula/mine and providing audio feedback when too close to any of them, or when a red alert is sounded, or when the vessel is hit when shields are down.
-  * A "torpedo tube matrix" console, showing the status of the torpedo tubes and allowing to quickly load ordnance.
-* All packed with node-webkit so that non-nerdy windows users can run it without major problems.
+None, really. This code branch is an architectural rewrite of Glitter.
+
+So far the packet parser works (with a pretty much perfect packet definition scheme) and the scaffolding (node-brunch) for the web app side of things is in place. This is pretty much a WIP right now.
+
+Works with Artemis 2.1.5 **only**.
+
+
 
 
 How do I run this thing?
 -----------------------------
 
-Go to https://github.com/IvanSanchez/artemis-glitter/releases and download the latest release for your architecture (Windows, MacOSX, or Linux 32- or 64-bit). Unzip, and run the only executable file.
+TODO: Write here some instructions on how to download Node.js, or sort out how to package the thing with node-webkit / atom-shell.
 
-Some features require Glitter to know about the `vesselData.xml` file, and the `*.snt` files that Artemis uses (these define the player ship's configuration and hardpoints). This can be done in two ways:
-
-* Copy the entire `dat` directory to where you unzipped Glitter. (Linux and Mac users might prefer to make a symbolic link instead)
-or
-* Edit the configuration file `config/default.yaml`, and change `datDir` to the full path of the directory holding `vesselData.xml`. This should *typically* be something like `C:\Program Files\Artemis\dat\`.
-
-If you're using any mods, take care to point `datDir` to the appropiate place.
-
-If you're running linux and Glitter doesn't start, it might be due to an issue regarding `libudev0`. Please read https://github.com/rogerwang/node-webkit/wiki/The-solution-of-lacking-libudev.so.0
 
 
 Planned features
 -------------------
 
-* Refactor the world model and provide functions for per-vessel visibility, depending on scanned status and active use of cloaker ability
-* Implement a sub-world model with a subset of nearby vessels (maybe 20K radius) by pigeon-holing all entities based on coordinates-modulus-10000. Update the "nearby world model" whenever the player vessel moves from a pigeon hole to another, change pigeon holes of other entities as they move. This will allow for quicker updates of the world model in slower CPUs (embedded ARM).
-* Provide an i2c interface, so we can light stuff up when running Glitter from a Raspberry Pi.
+* Connects properly to an Artemis server and understands most of the information sent by it.
+* Supports Artemis 2.1.1 **only**. Will not work with previous versions.
+* Implements a more-or-less complete world model.
+* Provide a web front-end with:
+  * LCARS-ey user experience
+  * Readable fonts
+  * All-in-one-page webapp, via brunch and javascript jade templates
+  * Debug map able to display the entire world model
+  * A "bearing-distance table" console, showing BRG, DST and HDG of nearest vessels/stations. Looks like a non-user-friendly grid of callsigns of numbers.
+  * A "proximity monitor" console, showing distances to the nearest asteriod/enemy/nebula/mine and providing audio feedback when too close to any of them, or when a red alert is sounded, or when the vessel is hit when shields are down.
+  * A "torpedo tube matrix" console, showing the status of the torpedo tubes and allowing to quickly load ordnance.
+* Pack it with node-webkit or atom-shell so that non-nerdy windows users can run it without major problems.
+* Expose not only raw game packets, but custom events:
+  * Shields up/down
+  * Red alert on/off
+  * Proximity alerts / distance to nearest entity changed
+  * Per-vessel visibility, depending on scanned status and active use of cloaker ability
+  * Sub-world model with a subset of nearby vessels (maybe 20K radius) by pigeon-holing all entities based on coordinates-modulus-10000. Update the "nearby world model" whenever the player vessel moves from a pigeon hole to another, change pigeon holes of other entities as they move. This will allow for quicker updates of the world model in slower CPUs (embedded ARM).
+* Provide an example of a standalone non-web app connecting via websockets to the Glitter web server, to do non-web stuff, e.g.:
+  * A glitter-to-i2c client able to run in a RaspPi
+  * A lifx (wifi light bulbs) client
 * A "combat helper" console, showing the vessel currently targeted by Weapons, plus its status. To not destroy playability, the information about frequencies, shields and damaged systems shall take a few seconds (depending on power allocated to sensors)
 * A "station helper" console, showing the status and amount of ordnance available at deep space stations, visually similar to the nav helper.
 * Improve the torpedo tube matrix console, to include beam freqs and beam recharge status in big, fat, blinking icons. Provide very basic auto-targeting (nearest drone, then nearest vessel).
@@ -85,29 +92,4 @@ If you have the skills needed for web programming and/or web design, and know ho
 If you are a techie with a very clear idea for a small change, then, by all means, use the bug tracker.
 
 If you're not a techie and want to suggest something, I'd really appreciate if you'd read http://catb.org/~esr/faqs/smart-questions.html before hitting the keyboard.
-
-
-How do I build this?
-------------------------
-
-This package is based on `node.js` and uses `npm` for downloading and installing dependencies.  Platform packages are built using `grunt` and `grunt-node-webkit-builder`.
-
-So the quick version to build this package is:
-
-Install `grunt-cli` via `npm` if you haven't done this already:
-
-   `$ npm install -g grunt-cli`
-
-Then install the build dependencies like so:
-
-   `$ npm install`
-
-Finally, build the packages:
-
-   `$ grunt`
-
-
-
-
-
 
